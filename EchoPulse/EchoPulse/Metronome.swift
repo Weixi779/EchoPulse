@@ -9,63 +9,38 @@ import Foundation
 import AVFoundation
 
 final class Metronome {
-    private var audioEngine = AVAudioEngine()
-    private var playerNode = AVAudioPlayerNode()
-    private var audioBuffer: AVAudioPCMBuffer?
+    private var audioPlayer: AVAudioPlayer?
     private var bpmTimer: Timer?
     var bpm: Double
-    var frequency: Double
-    var duration: Double
     var volume: Double
 
-    init(bpm: Double = 120, frequency: Double = 1000, duration: Double = 0.05, volume: Double = 0.5) {
+    init(bpm: Double = 120, volume: Double = 0.5) {
         self.bpm = bpm
-        self.frequency = frequency
-        self.duration = duration
         self.volume = volume
         setupAudio()
     }
 
     private func setupAudio() {
-        let session = AVAudioSession.sharedInstance()
-        try? session.setCategory(.ambient, mode: .default, options: [.mixWithOthers])
-        try? session.setActive(true)
-
-        audioEngine.attach(playerNode)
-        generateSound()
-
-        let mixer = audioEngine.mainMixerNode
-        audioEngine.connect(playerNode, to: mixer, format: audioBuffer?.format)
-        try? audioEngine.start()
-    }
-
-    private func generateSound() {
-        let format = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 1)
-        let frameCount = AVAudioFrameCount(44100 * duration)
-        audioBuffer = AVAudioPCMBuffer(pcmFormat: format!, frameCapacity: frameCount)
-        audioBuffer?.frameLength = frameCount
-
-        if let bufferPointer = audioBuffer?.floatChannelData {
-            let buffer = bufferPointer[0]
-            let sampleRate = Float(44100)
-            let angularFrequency = 2.0 * .pi * Float(frequency) / sampleRate
-            let volumeFactor = Float(volume)
-
-            for i in 0..<Int(frameCount) {
-                buffer[i] = sin(angularFrequency * Float(i)) * volumeFactor
+        if let url = Bundle.main.url(forResource: "metronome", withExtension: "m4a") {
+            do {
+                audioPlayer = try AVAudioPlayer(contentsOf: url)
+                audioPlayer?.prepareToPlay()
+                audioPlayer?.volume = Float(volume)
+            } catch {
+                print("Error loading audio file: \(error.localizedDescription)")
             }
         }
     }
 
     func start(bpm: Double) {
         self.bpm = bpm
+        bpmTimer?.invalidate()
         scheduleClick()
     }
 
     func stop() {
         bpmTimer?.invalidate()
         bpmTimer = nil
-        playerNode.stop()
     }
 
     func updateBPM(bpm: Double) {
@@ -75,15 +50,12 @@ final class Metronome {
         }
     }
 
-    func updateSound(frequency: Double, duration: Double, volume: Double) {
-        self.frequency = frequency
-        self.duration = duration
+    func updateVolume(volume: Double) {
         self.volume = volume
-        generateSound()
+        audioPlayer?.volume = Float(volume)
     }
 
     private func scheduleClick() {
-        bpmTimer?.invalidate()
         let interval = 60.0 / bpm
         bpmTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             self?.playClick()
@@ -91,8 +63,7 @@ final class Metronome {
     }
 
     private func playClick() {
-        guard let buffer = audioBuffer else { return }
-        playerNode.scheduleBuffer(buffer, at: nil, options: [])
-        playerNode.play()
+        audioPlayer?.currentTime = 0
+        audioPlayer?.play()
     }
 }

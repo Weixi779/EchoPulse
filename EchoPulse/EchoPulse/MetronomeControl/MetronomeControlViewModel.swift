@@ -11,23 +11,19 @@ import Foundation
 class MetronomeControlViewModel {
     var isPlaying = false
     var bpm: Double
-    var frequency: Double
-    var duration: Double
     var volume: Double
 
     private var metronome: Metronome
 
-    init(metronome: Metronome = Metronome(bpm: 120, frequency: 1000, duration: 0.05, volume: 0.5)) {
+    init(metronome: Metronome = Metronome(bpm: 120, volume: 0.5)) {
         self.metronome = metronome
         self.bpm = metronome.bpm
-        self.frequency = metronome.frequency
-        self.duration = metronome.duration
         self.volume = metronome.volume
     }
 
     func togglePlay() {
         isPlaying.toggle()
-        if isPlaying {
+        if (isPlaying) {
             metronome.start(bpm: bpm)
         } else {
             metronome.stop()
@@ -41,18 +37,8 @@ class MetronomeControlViewModel {
         }
     }
 
-    func updateFrequency(_ newValue: Double) {
-        frequency = newValue
-        metronome.updateSound(frequency: frequency, duration: duration, volume: volume)
-    }
-
-    func updateDuration(_ newValue: Double) {
-        duration = newValue
-        metronome.updateSound(frequency: frequency, duration: duration, volume: volume)
-    }
-
     func updateVolume(_ newValue: Double) {
         volume = newValue
-        metronome.updateSound(frequency: frequency, duration: duration, volume: volume)
+        metronome.updateVolume(volume: volume)
     }
 }

@@ -26,14 +26,6 @@ struct MetronomeControlView: View {
                 viewModel.updateBPM(viewModel.bpm)
             }
 
-            MetronomeControlSlider(title: "Frequency", value: $viewModel.frequency, range: 200...5000, step: 50) {
-                viewModel.updateFrequency(viewModel.frequency)
-            }
-
-            MetronomeControlSlider(title: "Duration", value: $viewModel.duration, range: 0.01...0.2, step: 0.01, multiplier: 1000, unit: "ms") {
-                viewModel.updateDuration(viewModel.duration)
-            }
-
             MetronomeControlSlider(title: "Volume", value: $viewModel.volume, range: 0.0...1.0, step: 0.1, multiplier: 100, unit: "%") {
                 viewModel.updateVolume(viewModel.volume)
             }
