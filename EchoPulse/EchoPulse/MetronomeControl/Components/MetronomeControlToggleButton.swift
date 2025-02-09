@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MetronomeToggleButton: View {
+struct MetronomeControlToggleButton: View {
     @Binding var isPlaying: Bool
     var onToggle: () -> Void
     private let width: CGFloat

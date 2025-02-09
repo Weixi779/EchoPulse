@@ -12,7 +12,7 @@ struct MetronomeControlView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            MetronomeToggleButton(
+            MetronomeControlToggleButton(
                 isPlaying: $viewModel.isPlaying,
                 onToggle: { viewModel.togglePlay() },
                 width: 244,
