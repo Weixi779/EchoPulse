@@ -12,7 +12,7 @@ final class Metronome {
     private var audioEngine = AVAudioEngine()
     private var playerNode = AVAudioPlayerNode()
     private var audioBuffer: AVAudioPCMBuffer?
-    private var timer: Timer?
+    private var bpmTimer: Timer?
     var bpm: Double
     var frequency: Double
     var duration: Double
@@ -59,19 +59,18 @@ final class Metronome {
 
     func start(bpm: Double) {
         self.bpm = bpm
-        stop()
         scheduleClick()
     }
 
     func stop() {
-        timer?.invalidate()
-        timer = nil
+        bpmTimer?.invalidate()
+        bpmTimer = nil
         playerNode.stop()
     }
 
     func updateBPM(bpm: Double) {
         self.bpm = bpm
-        if timer != nil {
+        if bpmTimer != nil {
             start(bpm: bpm)
         }
     }
@@ -84,15 +83,16 @@ final class Metronome {
     }
 
     private func scheduleClick() {
+        bpmTimer?.invalidate()
         let interval = 60.0 / bpm
-        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
+        bpmTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             self?.playClick()
         }
     }
 
     private func playClick() {
         guard let buffer = audioBuffer else { return }
-        playerNode.scheduleBuffer(buffer, at: nil, options: [], completionHandler: nil)
+        playerNode.scheduleBuffer(buffer, at: nil, options: [])
         playerNode.play()
     }
 }
