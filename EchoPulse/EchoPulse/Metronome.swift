@@ -9,12 +9,13 @@ import Foundation
 import AVFoundation
 
 final class Metronome {
-    private var audioPlayer: AVAudioPlayer?
+    private var audioPlayer: AudioPlayer
     private var bpmTimer: Timer?
     var bpm: Double
     var volume: Double
 
     init(bpm: Double = 120, volume: Double = 0.5) {
+        self.audioPlayer = AudioPlayer()
         self.bpm = bpm
         self.volume = volume
         setupAudioSession()
@@ -31,15 +32,12 @@ final class Metronome {
     }
 
     private func setupAudio() {
-        if let url = Bundle.main.url(forResource: "metronome", withExtension: "m4a") {
-            do {
-                audioPlayer = try AVAudioPlayer(contentsOf: url)
-                audioPlayer?.prepareToPlay()
-                audioPlayer?.volume = Float(volume)
-            } catch {
-                print("Error loading audio file: \(error.localizedDescription)")
-            }
+        guard let url = Bundle.main.url(forResource: "metronome", withExtension: "m4a") else {
+            print("Error: Wrong Audio File URL")
+            return
         }
+        
+        audioPlayer.prepareToPlay(url, volume)
     }
 
     func start(bpm: Double) {
@@ -62,18 +60,17 @@ final class Metronome {
 
     func updateVolume(volume: Double) {
         self.volume = volume
-        audioPlayer?.volume = Float(volume)
+        self.audioPlayer.setVolume(volume)
     }
 
     private func scheduleClick() {
         let interval = 60.0 / bpm
         bpmTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-            self?.playClick()
+            self?.playAudio()
         }
     }
 
-    private func playClick() {
-        audioPlayer?.currentTime = 0
-        audioPlayer?.play()
+    private func playAudio() {
+        self.audioPlayer.play()
     }
 }
