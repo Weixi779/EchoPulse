@@ -14,7 +14,7 @@ final class Metronome {
     var bpm: Double
     var volume: Double
 
-    init(bpm: Double = 120, volume: Double = 0.5) {
+    init(bpm: Double, volume: Double) {
         self.audioPlayer = AudioPlayer()
         self.bpm = bpm
         self.volume = volume

@@ -15,10 +15,10 @@ class MetronomeControlViewModel {
 
     private var metronome: Metronome
 
-    init(metronome: Metronome = Metronome(bpm: 120, volume: 0.5)) {
-        self.metronome = metronome
-        self.bpm = metronome.bpm
-        self.volume = metronome.volume
+    init(bpm: Double = 120, volume: Double = 0.5) {
+        self.bpm = bpm
+        self.volume = volume
+        self.metronome = Metronome(bpm: bpm, volume: volume)
     }
 
     func togglePlay() {
