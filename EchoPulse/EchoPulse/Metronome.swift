@@ -10,7 +10,7 @@ import AVFoundation
 
 final class Metronome {
     private var audioPlayer: AudioPlayer
-    private var bpmTimer: Timer?
+    private var audioBuffer: AVAudioPCMBuffer?
     var bpm: Double
     var volume: Double
 
@@ -32,45 +32,49 @@ final class Metronome {
     }
 
     private func setupAudio() {
-        guard let url = Bundle.main.url(forResource: "metronome", withExtension: "m4a") else {
+        guard let url = Bundle.main.url(forResource: "Rimshot", withExtension: "aif") else {
             print("Error: Wrong Audio File URL")
             return
         }
-        
-        audioPlayer.prepareToPlay(url, volume)
+
+        do {
+            let audioFile = try AVAudioFile(forReading: url)
+            let format = audioFile.processingFormat
+            let frameCount = AVAudioFrameCount(audioFile.length)
+            audioBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount)
+            try audioFile.read(into: audioBuffer!)
+
+            audioPlayer.prepareToPlay(buffer: audioBuffer!, volume: volume)
+        } catch {
+            print("Error loading audio file: \(error.localizedDescription)")
+        }
     }
 
     func start(bpm: Double) {
-        self.bpm = bpm
-        bpmTimer?.invalidate()
-        scheduleClick()
+        updateBPM(bpm: bpm)
+        playAudio()
     }
 
     func stop() {
-        bpmTimer?.invalidate()
-        bpmTimer = nil
+        audioPlayer.stop()
     }
 
     func updateBPM(bpm: Double) {
         self.bpm = bpm
-        if bpmTimer != nil {
-            start(bpm: bpm)
-        }
+        guard let buffer = audioBuffer else { return }
+        audioPlayer.updateBuffer(for: bpm, originalBuffer: buffer)
     }
 
     func updateVolume(volume: Double) {
         self.volume = volume
-        self.audioPlayer.setVolume(volume)
-    }
-
-    private func scheduleClick() {
-        let interval = 60.0 / bpm
-        bpmTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-            self?.playAudio()
-        }
+        audioPlayer.setVolume(volume)
     }
 
     private func playAudio() {
-        self.audioPlayer.play()
+        guard audioBuffer != nil else {
+            print("Error: Audio buffer is not loaded.")
+            return
+        }
+        audioPlayer.play()
     }
 }
