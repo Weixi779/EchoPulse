@@ -24,15 +24,15 @@ final class Metronome {
 
     private func setupAudioSession() {
         do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, options: [.mixWithOthers])
-            try AVAudioSession.sharedInstance().setActive(true)
+            try AVAudioSession.sharedInstance().setCategory(.ambient, options: [.mixWithOthers])
+            try AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
         } catch {
             print("Error setting up AVAudioSession: \(error.localizedDescription)")
         }
     }
 
     private func setupAudio() {
-        guard let url = Bundle.main.url(forResource: "Rimshot", withExtension: "aif") else {
+        guard let url = Bundle.main.url(forResource: "Mechanical metronome - High", withExtension: "aif") else {
             print("Error: Wrong Audio File URL")
             return
         }

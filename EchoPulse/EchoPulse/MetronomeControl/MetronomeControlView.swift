@@ -9,9 +9,22 @@ import SwiftUI
 
 struct MetronomeControlView: View {
     @State private var viewModel = MetronomeControlViewModel()
+    
 
     var body: some View {
         VStack(spacing: 20) {
+            HStack {
+                Image(systemName: "music.note")
+                    .font(.largeTitle)
+                    .foregroundStyle(.blue)
+                
+                Picker("Source", selection: $viewModel.sourceType) {
+                    ForEach(MetronomeSourceType.allCases) { type in
+                        Text(type.fileName)
+                    }
+                }
+            }
+            
             MetronomeControlToggleButton(
                 isPlaying: $viewModel.isPlaying,
                 onToggle: { viewModel.togglePlay() },

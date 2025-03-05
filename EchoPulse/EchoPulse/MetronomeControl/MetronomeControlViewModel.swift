@@ -10,6 +10,7 @@ import Foundation
 @Observable
 class MetronomeControlViewModel {
     var isPlaying = false
+    var sourceType: MetronomeSourceType = .mechanicalMetronomeHigh
     var bpm: Double
     var volume: Double
 

@@ -11,12 +11,12 @@ import AVFoundation
 final class AudioPlayer {
     private var audioEngine = AVAudioEngine()
     private var playerNode = AVAudioPlayerNode()
-    private var timePitch = AVAudioUnitTimePitch()  // 用于调整播放速率
+    private var timePitch = AVAudioUnitTimePitch()
     private var audioBuffer: AVAudioPCMBuffer?
     private let baseBPM: Double = 20  // 基准 BPM，基于 3 秒音频
 
     init() {
-        setupAudioEngine()
+//        setupAudioEngine()
     }
 
     private func setupAudioEngine() {
@@ -58,7 +58,6 @@ final class AudioPlayer {
     }
     
     public func updateBuffer(for bpm: Double, originalBuffer: AVAudioPCMBuffer) {
-        let baseBPM: Double = 20
         let targetDuration = (60.0 / bpm)
         let sampleRate = originalBuffer.format.sampleRate
         let totalFrames = AVAudioFrameCount(targetDuration * sampleRate)
