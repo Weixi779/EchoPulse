@@ -8,7 +8,7 @@
 import Foundation
 import AVFoundation
 
-final class AudioPlayer {
+final class MetronomePlayer {
     private var audioEngine = AVAudioEngine()
     private var playerNode = AVAudioPlayerNode()
     private var timePitch = AVAudioUnitTimePitch()

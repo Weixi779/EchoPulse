@@ -9,13 +9,13 @@ import Foundation
 import AVFoundation
 
 final class Metronome {
-    private var audioPlayer: AudioPlayer
+    private var player: MetronomePlayer
     private var audioBuffer: AVAudioPCMBuffer?
     var bpm: Double
     var volume: Double
 
     init(bpm: Double, volume: Double) {
-        self.audioPlayer = AudioPlayer()
+        self.player = .init()
         self.bpm = bpm
         self.volume = volume
         setupAudio()
@@ -34,7 +34,7 @@ final class Metronome {
             audioBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount)
             try audioFile.read(into: audioBuffer!)
 
-            audioPlayer.prepareToPlay(buffer: audioBuffer!, volume: volume)
+            player.prepareToPlay(buffer: audioBuffer!, volume: volume)
         } catch {
             print("Error loading audio file: \(error.localizedDescription)")
         }
@@ -46,18 +46,18 @@ final class Metronome {
     }
 
     func stop() {
-        audioPlayer.stop()
+        player.stop()
     }
 
     func updateBPM(bpm: Double) {
         self.bpm = bpm
         guard let buffer = audioBuffer else { return }
-        audioPlayer.updateBuffer(for: bpm, originalBuffer: buffer)
+        player.updateBuffer(for: bpm, originalBuffer: buffer)
     }
 
     func updateVolume(volume: Double) {
         self.volume = volume
-        audioPlayer.setVolume(volume)
+        player.setVolume(volume)
     }
 
     private func playAudio() {
@@ -65,6 +65,6 @@ final class Metronome {
             print("Error: Audio buffer is not loaded.")
             return
         }
-        audioPlayer.play()
+        player.play()
     }
 }
