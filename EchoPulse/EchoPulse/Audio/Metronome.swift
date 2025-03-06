@@ -12,35 +12,29 @@ final class Metronome {
     private var player: MetronomePlayer
     private var sound: MetronomeSound
     
-    private let baseBPM: Double = 20
     var bpm: Double
     var volume: Double
 
-    init(bpm: Double, volume: Double) {
-        self.sound = .init(fileName: "Mechanical metronome - High", fileExtension: "aif")
-        self.player = .init(buffer: self.sound.getBuffer()!)
+    init(bpm: Double, volume: Double, sourceType: MetronomeSourceType) {
         self.bpm = bpm
         self.volume = volume
+        
+        self.sound = .init(sourceType: sourceType)
+        self.sound.adjustBufferForBPM(bpm: bpm)
+        
+        self.player = .init(buffer: self.sound.getBuffer()!)
         self.player.setVolume(volume)
-        loadSound()
-    }
-
-    private func loadSound() {
-//        if let buffer = sound.getBuffer() {
-//            player.prepareToPlay(buffer: buffer, volume: volume)
-//        }
     }
     
-    func start(bpm: Double) {
-        updateBPM(bpm: bpm)
+    public func start() {
         player.play()
     }
 
-    func stop() {
+    public func stop() {
         player.stop()
     }
 
-    func updateBPM(bpm: Double) {
+    public func updateBPM(bpm: Double) {
         self.bpm = bpm
         self.sound.adjustBufferForBPM(bpm: bpm)
         if let buffer = self.sound.getBuffer() {
@@ -48,14 +42,15 @@ final class Metronome {
         }
     }
 
-    func updateVolume(volume: Double) {
+    public func updateVolume(volume: Double) {
         self.volume = volume
         player.setVolume(volume)
     }
 
-    func changeSound(fileName: String, fileExtension: String) {
-        sound.updateFile(fileName: fileName, fileExtension: fileExtension)
-        loadSound()
-        print("Updated metronome sound to \(fileName).\(fileExtension)")
+    public func changeSoundType(_ sourceType: MetronomeSourceType) {
+        self.sound.updateSourceType(sourceType, self.bpm)
+        if let buffer = self.sound.getBuffer() {
+            self.player.updateBuffer(buffer: buffer)
+        }
     }
 }

@@ -8,9 +8,8 @@
 import SwiftUI
 
 struct MetronomeControlView: View {
-    @State private var viewModel = MetronomeControlViewModel()
+    @State private var viewModel = MetronomeControlViewModel(bpm: 120, volume: 0.5, sourceType: .mechanicalMetronomeHigh)
     
-
     var body: some View {
         VStack(spacing: 20) {
             HStack {

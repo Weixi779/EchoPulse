@@ -10,22 +10,27 @@ import Foundation
 @Observable
 class MetronomeControlViewModel {
     var isPlaying = false
-    var sourceType: MetronomeSourceType = .mechanicalMetronomeHigh
+    var sourceType: MetronomeSourceType {
+        didSet {
+            self.metronome.changeSoundType(sourceType)
+        }
+    }
     var bpm: Double
     var volume: Double
 
     private var metronome: Metronome
 
-    init(bpm: Double = 120, volume: Double = 0.5) {
+    init(bpm: Double, volume: Double, sourceType: MetronomeSourceType) {
         self.bpm = bpm
         self.volume = volume
-        self.metronome = Metronome(bpm: bpm, volume: volume)
+        self.sourceType = sourceType
+        self.metronome = Metronome(bpm: bpm, volume: volume, sourceType: sourceType)
     }
 
     func togglePlay() {
         isPlaying.toggle()
         if (isPlaying) {
-            metronome.start(bpm: bpm)
+            metronome.start()
         } else {
             metronome.stop()
         }

@@ -21,6 +21,7 @@ final class MetronomePlayer {
         self.audioBuffer = buffer
         setupAudioSession()
         setupAudioEngine()
+        updateBuffer(buffer: buffer)
     }
     
     private func setupAudioSession() {

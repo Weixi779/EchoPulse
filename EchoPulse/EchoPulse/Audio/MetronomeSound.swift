@@ -7,17 +7,18 @@
 
 import Foundation
 import AVFoundation
+import os
 
 final class MetronomeSound {
     private var audioFile: AVAudioFile?
     private var originalBuffer: AVAudioPCMBuffer?
     private var audioBuffer: AVAudioPCMBuffer?
-    var fileName: String
-    var fileExtension: String
+    private var sourceType: MetronomeSourceType
     
-    init(fileName: String, fileExtension: String) {
-        self.fileName = fileName
-        self.fileExtension = fileExtension
+    private let logger: Logger = Logger(subsystem: "Audio", category: "MetronomeSound")
+    
+    init(sourceType: MetronomeSourceType) {
+        self.sourceType = sourceType
         loadAudioFile()
     }
     
@@ -25,10 +26,13 @@ final class MetronomeSound {
         return audioBuffer
     }
 
-    public func updateFile(fileName: String, fileExtension: String) {
-        self.fileName = fileName
-        self.fileExtension = fileExtension
+    public func updateSourceType(_ sourceType: MetronomeSourceType, _ targetBPM: Double? = nil) {
+        self.sourceType = sourceType
         loadAudioFile()
+        
+        if let bpm = targetBPM {
+            self.adjustBufferForBPM(bpm: bpm)
+        }
     }
     
     public func adjustBufferForBPM(bpm: Double) {
@@ -39,14 +43,14 @@ final class MetronomeSound {
         let totalFrames = AVAudioFrameCount(targetDuration * sampleRate)
 
         guard let trimmedBuffer = AVAudioPCMBuffer(pcmFormat: originalBuffer.format, frameCapacity: totalFrames) else {
-            print("Error creating trimmed buffer.")
+            logger.error("Error creating trimmed buffer.")
             return
         }
         trimmedBuffer.frameLength = totalFrames
 
-        if let source = originalBuffer.floatChannelData,
-           let destination = trimmedBuffer.floatChannelData {
-            for channel in 0..<Int(originalBuffer.format.channelCount) {
+        if let source = originalBuffer.floatChannelData, let destination = trimmedBuffer.floatChannelData {
+            let channelCount = Int(originalBuffer.format.channelCount)
+            for channel in 0..<channelCount {
                 memcpy(destination[channel], source[channel], Int(totalFrames) * MemoryLayout<Float>.size)
             }
         }
@@ -55,8 +59,10 @@ final class MetronomeSound {
     }
     
     private func loadAudioFile() {
-        guard let url = Bundle.main.url(forResource: fileName, withExtension: fileExtension) else {
-            print("Error: Audio file \(fileName).\(fileExtension) not found")
+        let fileName = sourceType.fileName
+        let fileType = sourceType.fileType
+        guard let url = Bundle.main.url(forResource: fileName, withExtension: fileType) else {
+            logger.error("Error: Audio file \(fileName).\(fileType) not found")
             return
         }
         
@@ -67,7 +73,7 @@ final class MetronomeSound {
             originalBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount)
             try audioFile?.read(into: originalBuffer!)
         } catch {
-            print("Error loading audio file: \(error.localizedDescription)")
+            logger.error("Error loading audio file: \(error.localizedDescription)")
         }
     }
 }
