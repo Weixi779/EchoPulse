@@ -16,7 +16,17 @@ final class AudioPlayer {
     private let baseBPM: Double = 20  // 基准 BPM，基于 3 秒音频
 
     init() {
-//        setupAudioEngine()
+        setupAudioSession()
+        setupAudioEngine()
+    }
+    
+    private func setupAudioSession() {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.ambient, options: [.mixWithOthers])
+            try AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
+        } catch {
+            print("Error setting up AVAudioSession: \(error.localizedDescription)")
+        }
     }
 
     private func setupAudioEngine() {

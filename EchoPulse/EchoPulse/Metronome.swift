@@ -18,17 +18,7 @@ final class Metronome {
         self.audioPlayer = AudioPlayer()
         self.bpm = bpm
         self.volume = volume
-        setupAudioSession()
         setupAudio()
-    }
-
-    private func setupAudioSession() {
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.ambient, options: [.mixWithOthers])
-            try AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
-        } catch {
-            print("Error setting up AVAudioSession: \(error.localizedDescription)")
-        }
     }
 
     private func setupAudio() {
