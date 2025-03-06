@@ -31,4 +31,8 @@ enum MetronomeSourceType: String, CaseIterable, Identifiable {
         case .rimshot: return "Rimshot"
         }
     }
+    
+    var fileType: String {
+        return "aif"
+    }
 }

@@ -17,17 +17,18 @@ final class Metronome {
     var volume: Double
 
     init(bpm: Double, volume: Double) {
-        self.player = .init()
         self.sound = .init(fileName: "Mechanical metronome - High", fileExtension: "aif")
+        self.player = .init(buffer: self.sound.getBuffer()!)
         self.bpm = bpm
         self.volume = volume
+        self.player.setVolume(volume)
         loadSound()
     }
 
     private func loadSound() {
-        if let buffer = sound.getBuffer() {
-            player.prepareToPlay(buffer: buffer, volume: volume)
-        }
+//        if let buffer = sound.getBuffer() {
+//            player.prepareToPlay(buffer: buffer, volume: volume)
+//        }
     }
     
     func start(bpm: Double) {

@@ -7,14 +7,18 @@
 
 import Foundation
 import AVFoundation
+import os
 
 final class MetronomePlayer {
     private var audioEngine = AVAudioEngine()
     private var playerNode = AVAudioPlayerNode()
     private var timePitch = AVAudioUnitTimePitch()
-    private var audioBuffer: AVAudioPCMBuffer?
+    private var audioBuffer: AVAudioPCMBuffer
+    
+    private var logger = Logger(subsystem: "Audio", category: "MetronomePlayer")
 
-    init() {
+    init(buffer: AVAudioPCMBuffer) {
+        self.audioBuffer = buffer
         setupAudioSession()
         setupAudioEngine()
     }
@@ -24,7 +28,7 @@ final class MetronomePlayer {
             try AVAudioSession.sharedInstance().setCategory(.playback, options: [.mixWithOthers])
             try AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
         } catch {
-            print("Error setting up AVAudioSession: \(error.localizedDescription)")
+            logger.error("Error setting up AVAudioSession: \(error.localizedDescription)")
         }
     }
 
@@ -37,24 +41,20 @@ final class MetronomePlayer {
         do {
             try audioEngine.start()
         } catch {
-            print("Error starting audio engine: \(error.localizedDescription)")
+            logger.error("Error starting audio engine: \(error.localizedDescription)")
+        }
+    }
+    
+    public func play() {
+        if !playerNode.isPlaying {
+            playerNode.play()
         }
     }
 
-    public func prepareToPlay(buffer: AVAudioPCMBuffer, volume: Double) {
-        self.audioBuffer = buffer
-        setVolume(volume)
-    }
-
-    public func play() {
-        guard let buffer = audioBuffer else { return }
-        playerNode.stop()
-        playerNode.scheduleBuffer(buffer, at: nil, options: [.loops], completionHandler: nil)
-        playerNode.play()
-    }
-
     public func stop() {
-        playerNode.stop()
+        if self.playerNode.isPlaying {
+            playerNode.stop()
+        }
     }
 
     public func setVolume(_ volume: Double) {
@@ -62,9 +62,18 @@ final class MetronomePlayer {
     }
 
     public func updateBuffer(buffer: AVAudioPCMBuffer) {
-        audioBuffer = buffer
+        self.audioBuffer = buffer
+        self.updateScheduledBufferIfNeeded()
+    }
+    
+    private func updateScheduledBufferIfNeeded() {
+        if !self.playerNode.isPlaying {
+            self.playerNode.scheduleBuffer(self.audioBuffer, at: nil, options: [.loops])
+            return
+        }
+        
         playerNode.stop()
-        playerNode.scheduleBuffer(buffer, at: nil, options: [.loops])
+        playerNode.scheduleBuffer(self.audioBuffer, at: nil, options: [.loops])
         playerNode.play()
     }
 }
