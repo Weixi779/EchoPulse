@@ -13,7 +13,6 @@ final class MetronomePlayer {
     private var playerNode = AVAudioPlayerNode()
     private var timePitch = AVAudioUnitTimePitch()
     private var audioBuffer: AVAudioPCMBuffer?
-    private let baseBPM: Double = 20  // 基准 BPM，基于 3 秒音频
 
     init() {
         setupAudioSession()
@@ -62,35 +61,10 @@ final class MetronomePlayer {
         audioEngine.mainMixerNode.outputVolume = Float(volume)
     }
 
-    public func updateBPM(bpm: Double) {
-        // 以 20 BPM 为基准，调整播放速率
-        timePitch.rate = Float(bpm / baseBPM)
-    }
-    
-    public func updateBuffer(for bpm: Double, originalBuffer: AVAudioPCMBuffer) {
-        let targetDuration = (60.0 / bpm)
-        let sampleRate = originalBuffer.format.sampleRate
-        let totalFrames = AVAudioFrameCount(targetDuration * sampleRate)
-
-        // 创建新的裁剪缓冲区
-        guard let trimmedBuffer = AVAudioPCMBuffer(pcmFormat: originalBuffer.format, frameCapacity: totalFrames) else {
-            print("Error creating trimmed buffer.")
-            return
-        }
-        trimmedBuffer.frameLength = totalFrames
-
-        // 复制数据到新的缓冲区
-        if let source = originalBuffer.floatChannelData,
-           let destination = trimmedBuffer.floatChannelData {
-            for channel in 0..<Int(originalBuffer.format.channelCount) {
-                memcpy(destination[channel], source[channel], Int(totalFrames) * MemoryLayout<Float>.size)
-            }
-        }
-
-        // 更新播放缓冲
-        audioBuffer = trimmedBuffer
+    public func updateBuffer(buffer: AVAudioPCMBuffer) {
+        audioBuffer = buffer
         playerNode.stop()
-        playerNode.scheduleBuffer(trimmedBuffer, at: nil, options: [.loops])
+        playerNode.scheduleBuffer(buffer, at: nil, options: [.loops])
         playerNode.play()
     }
 }

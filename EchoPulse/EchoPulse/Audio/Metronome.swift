@@ -10,39 +10,29 @@ import AVFoundation
 
 final class Metronome {
     private var player: MetronomePlayer
-    private var audioBuffer: AVAudioPCMBuffer?
+    private var sound: MetronomeSound
+    
+    private let baseBPM: Double = 20
     var bpm: Double
     var volume: Double
 
     init(bpm: Double, volume: Double) {
         self.player = .init()
+        self.sound = .init(fileName: "Mechanical metronome - High", fileExtension: "aif")
         self.bpm = bpm
         self.volume = volume
-        setupAudio()
+        loadSound()
     }
 
-    private func setupAudio() {
-        guard let url = Bundle.main.url(forResource: "Mechanical metronome - High", withExtension: "aif") else {
-            print("Error: Wrong Audio File URL")
-            return
-        }
-
-        do {
-            let audioFile = try AVAudioFile(forReading: url)
-            let format = audioFile.processingFormat
-            let frameCount = AVAudioFrameCount(audioFile.length)
-            audioBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount)
-            try audioFile.read(into: audioBuffer!)
-
-            player.prepareToPlay(buffer: audioBuffer!, volume: volume)
-        } catch {
-            print("Error loading audio file: \(error.localizedDescription)")
+    private func loadSound() {
+        if let buffer = sound.getBuffer() {
+            player.prepareToPlay(buffer: buffer, volume: volume)
         }
     }
-
+    
     func start(bpm: Double) {
         updateBPM(bpm: bpm)
-        playAudio()
+        player.play()
     }
 
     func stop() {
@@ -51,8 +41,10 @@ final class Metronome {
 
     func updateBPM(bpm: Double) {
         self.bpm = bpm
-        guard let buffer = audioBuffer else { return }
-        player.updateBuffer(for: bpm, originalBuffer: buffer)
+        self.sound.adjustBufferForBPM(bpm: bpm)
+        if let buffer = self.sound.getBuffer() {
+            self.player.updateBuffer(buffer: buffer)
+        }
     }
 
     func updateVolume(volume: Double) {
@@ -60,11 +52,9 @@ final class Metronome {
         player.setVolume(volume)
     }
 
-    private func playAudio() {
-        guard audioBuffer != nil else {
-            print("Error: Audio buffer is not loaded.")
-            return
-        }
-        player.play()
+    func changeSound(fileName: String, fileExtension: String) {
+        sound.updateFile(fileName: fileName, fileExtension: fileExtension)
+        loadSound()
+        print("Updated metronome sound to \(fileName).\(fileExtension)")
     }
 }
