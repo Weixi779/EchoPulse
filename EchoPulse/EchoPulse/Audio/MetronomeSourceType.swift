@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum MetronomeSourceType: String, CaseIterable, Identifiable {
+enum MetronomeSourceType: CaseIterable, Identifiable, Codable {
     var id: Self { self }
     
     case bassDrum

@@ -6,25 +6,31 @@
 //
 
 import Foundation
+import Observation
 
 @Observable
-class MetronomeControlViewModel {
+final class MetronomeControlViewModel {
     var isPlaying = false
     var sourceType: MetronomeSourceType {
         didSet {
             self.metronome.changeSoundType(sourceType)
         }
     }
+    
     var bpm: Double
     var volume: Double
 
     private var metronome: Metronome
 
-    init(bpm: Double, volume: Double, sourceType: MetronomeSourceType) {
-        self.bpm = bpm
-        self.volume = volume
-        self.sourceType = sourceType
-        self.metronome = Metronome(bpm: bpm, volume: volume, sourceType: sourceType)
+    init() {
+        let storageBPM = UDUtils.getValue(for: UDKeys.storageBPM)
+        let storageVolume = UDUtils.getValue(for: UDKeys.storageVolume)
+        let storageSourceType = UDUtils.getValue(for: UDKeys.storageSourceType)
+        
+        self.bpm = storageBPM
+        self.volume = storageVolume
+        self.sourceType = storageSourceType
+        self.metronome = Metronome(bpm: storageBPM, volume: storageVolume, sourceType: storageSourceType)
     }
 
     func togglePlay() {
@@ -47,4 +53,10 @@ class MetronomeControlViewModel {
         volume = newValue
         metronome.updateVolume(volume: volume)
     }
+}
+
+extension UDKeys {
+    static let storageBPM = UDKey<Double>("MetronomeControl.BPM", defaultValue: 120)
+    static let storageVolume = UDKey<Double>("MetronomeControl.Volume", defaultValue: 0.5)
+    static let storageSourceType = UDKey<MetronomeSourceType>("MetronomeControl.SourceType", defaultValue: .bassDrum)
 }
