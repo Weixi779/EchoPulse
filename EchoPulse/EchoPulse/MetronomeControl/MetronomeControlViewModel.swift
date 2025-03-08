@@ -7,19 +7,22 @@
 
 import Foundation
 import Observation
+import Combine
 
 @Observable
 final class MetronomeControlViewModel {
-    var isPlaying = false
     var sourceType: MetronomeSourceType {
         didSet {
             self.metronome.changeSoundType(sourceType)
+            UDUtils.setValue(sourceType, for: UDKeys.storageSourceType)
         }
     }
     
     var bpm: Double
+    
     var volume: Double
-
+    
+    var isPlaying = false
     private var metronome: Metronome
 
     init() {
@@ -44,14 +47,14 @@ final class MetronomeControlViewModel {
 
     func updateBPM(_ newValue: Double) {
         bpm = newValue
-        if isPlaying {
-            metronome.updateBPM(bpm: newValue)
-        }
+        self.metronome.updateBPM(bpm: bpm)
+        UDUtils.setValue(bpm, for: UDKeys.storageBPM)
     }
 
     func updateVolume(_ newValue: Double) {
         volume = newValue
-        metronome.updateVolume(volume: volume)
+        self.metronome.updateVolume(volume: volume)
+        UDUtils.setValue(volume, for: UDKeys.storageVolume)
     }
 }
 
