@@ -19,7 +19,6 @@ final class MetronomeControlViewModel {
     }
     
     var bpm: Double
-    
     var volume: Double
     
     var isPlaying = false
@@ -48,13 +47,11 @@ final class MetronomeControlViewModel {
     }
 
     func updateBPM(_ newValue: Double) {
-        bpm = newValue
         self.metronome.updateBPM(bpm: bpm)
         UDUtils.setValue(bpm, for: UDKeys.storageBPM)
     }
 
     func updateVolume(_ newValue: Double) {
-        volume = newValue
         self.metronome.updateVolume(volume: volume)
         UDUtils.setValue(volume, for: UDKeys.storageVolume)
     }
