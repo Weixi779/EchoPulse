@@ -34,6 +34,8 @@ final class MetronomeControlViewModel {
         self.volume = storageVolume
         self.sourceType = storageSourceType
         self.metronome = Metronome(bpm: storageBPM, volume: storageVolume, sourceType: storageSourceType)
+        
+        self.metronome.delegate = self
     }
 
     func togglePlay() {
@@ -55,6 +57,22 @@ final class MetronomeControlViewModel {
         volume = newValue
         self.metronome.updateVolume(volume: volume)
         UDUtils.setValue(volume, for: UDKeys.storageVolume)
+    }
+}
+
+extension MetronomeControlViewModel: MetronomeDelegate {
+    func audioInterruptionBegan() {
+        isPlaying = false
+        metronome.stop()
+    }
+    
+    func audioInterruptionEnded(shouldResume: Bool) {
+        isPlaying = shouldResume
+        if shouldResume {
+            metronome.start()
+        } else {
+            metronome.stop()
+        }
     }
 }
 
