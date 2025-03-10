@@ -17,7 +17,7 @@ struct MetronomeSoundPickerHeader: View {
                 
                 Button {
                     withAnimation {
-                        self.isShowMenu.toggle()
+                        self.isShowMenu = true
                     }
                 } label: {
                     Image(systemName: "music.note.list")

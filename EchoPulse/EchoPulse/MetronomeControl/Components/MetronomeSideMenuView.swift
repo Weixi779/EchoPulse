@@ -24,7 +24,7 @@ struct MetronomeSideMenuView: View {
                     .ignoresSafeArea()
                     .onTapGesture {
                         withAnimation {
-                            isShowMenu.toggle()
+                            isShowMenu = false
                         }
                     }
                 
@@ -58,6 +58,7 @@ struct MetronomeSideMenuView: View {
                                     }
                                     .padding(.vertical, (geo.size.height - cellHeight) / 2)
                                 }
+                                .scrollIndicators(.hidden)
                                 .onScrollGeometryChange(for: CGPoint.self) { geometry in
                                     geometry.contentOffset
                                 } action: { oldOffset, newOffset in
@@ -74,10 +75,13 @@ struct MetronomeSideMenuView: View {
                                     }
                                 }
                                 .onScrollPhaseChange { oldPhase, newPhase in
-                                    if newPhase == .idle {
+                                    if oldPhase != .idle && newPhase == .idle {
                                         withAnimation(.easeInOut) {
                                             proxy.scrollTo(selectedSound, anchor: .center)
                                         }
+                                    }
+                                    if oldPhase == .idle && newPhase == .idle {
+                                        proxy.scrollTo(selectedSound, anchor: .center)
                                     }
                                 }
                             }
