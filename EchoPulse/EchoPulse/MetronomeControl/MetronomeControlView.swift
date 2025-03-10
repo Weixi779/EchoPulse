@@ -34,7 +34,6 @@ struct MetronomeControlView: View {
                     width: 244,
                     height: 120,
                     iconSize: 45,
-                    backgroundColor: .blue,
                     cornerRadius: 20
                 )
                 
