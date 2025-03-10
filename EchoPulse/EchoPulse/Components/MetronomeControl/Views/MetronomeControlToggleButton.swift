@@ -33,12 +33,14 @@ struct MetronomeControlToggleButton: View {
         } label: {
             ZStack {
                 if !isPlaying {
-                    schemeStyle.styleGradient(isDarkMode: colorScheme.isDarkMode)
+                    schemeStyle
+                        .styleGradient(isDarkMode: colorScheme.isDarkMode)
+                        .transition(.opacity)
                 } else {
                     TimelineView(.animation) { timeline in
-                        let x = (sin(timeline.date.timeIntervalSince1970) + 1) / 2
-                        schemeStyle.styleGradient(Float(x), isDarkMode: colorScheme.isDarkMode)
+                        schemeStyle.animatedStyleGradient(for: timeline.date, isDarkMode: colorScheme.isDarkMode)
                     }
+                    .transition(.opacity)
                 }
                 
                 Image(systemName: isPlaying ? "pause.fill" : "play.fill")
@@ -49,5 +51,6 @@ struct MetronomeControlToggleButton: View {
         }
         .frame(width: width, height: height)
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .animation(.easeInOut(duration: 0.3), value: isPlaying)
     }
 }
