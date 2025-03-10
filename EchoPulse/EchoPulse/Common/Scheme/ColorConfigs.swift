@@ -1,5 +1,5 @@
 //
-//  ColorStyle.swift
+//  ColorConfigs.swift
 //  EchoPulse
 //
 //  Created by 孙世伟 on 2025/3/10.
@@ -8,28 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct ColorStyle {
-    static let lightMeshGradient = MeshGradient(
-        width: 3, height: 3,
-        points: [
-            [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
-            [0.0, 0.7], [0.6, 0.3], [1.0, 0.5],
-            [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]
-        ], colors: lightColors
-            .shuffled()
-            .flatMap { Array(repeating: $0, count: 2) }
-    )
-    
-    static let darkMeshGradient = MeshGradient(
-        width: 3, height: 3,
-        points: [
-            [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
-            [0.0, 0.7], [0.6, 0.3], [1.0, 0.5],
-            [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]
-        ], colors: darkColors
-            .shuffled()
-            .flatMap { Array(repeating: $0, count: 2) }
-    )
+struct ColorConfigs {
     
     static let lightColors: [Color] = [
         .init(hex: "F8E4DB"),
@@ -75,4 +54,24 @@ extension Color {
             opacity: Double(a) / 255
         )
     }
+}
+
+#Preview {
+    struct TestView: View {
+        var body: some View {
+            VStack {
+                ForEach(ColorConfigs.lightColors, id: \.self) { color in
+                    Rectangle()
+                        .foregroundStyle(color)
+                }
+                
+                ForEach(ColorConfigs.darkColors, id: \.self) { color in
+                    Rectangle()
+                        .foregroundStyle(color)
+                }
+            }
+        }
+    }
+    return TestView()
+    
 }

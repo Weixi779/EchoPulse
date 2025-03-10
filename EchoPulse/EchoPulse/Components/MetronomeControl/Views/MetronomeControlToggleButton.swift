@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MetronomeControlToggleButton: View {
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.schemeStyle) var schemeStyle
     
     @Binding var isPlaying: Bool
     var onToggle: () -> Void
@@ -31,7 +32,14 @@ struct MetronomeControlToggleButton: View {
             onToggle()
         } label: {
             ZStack {
-                RoundedRectangle(cornerRadius: cornerRadius)
+                if !isPlaying {
+                    schemeStyle.styleGradient(isDarkMode: colorScheme.isDarkMode)
+                } else {
+                    TimelineView(.animation) { timeline in
+                        let x = (sin(timeline.date.timeIntervalSince1970) + 1) / 2
+                        schemeStyle.styleGradient(Float(x), isDarkMode: colorScheme.isDarkMode)
+                    }
+                }
                 
                 Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                     .resizable()
@@ -40,10 +48,6 @@ struct MetronomeControlToggleButton: View {
             }
         }
         .frame(width: width, height: height)
-        .foregroundStyle(colorGradient)
-    }
-    
-    var colorGradient: MeshGradient {
-        colorScheme == .dark ? ColorStyle.darkMeshGradient : ColorStyle.lightMeshGradient
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
     }
 }
