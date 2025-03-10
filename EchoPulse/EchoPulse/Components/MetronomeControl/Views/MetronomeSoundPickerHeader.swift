@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct MetronomeSoundPickerHeader: View {
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.schemeStyle) var schemeStyle
+    
     @Binding var isShowMenu: Bool
     
     var body: some View {
@@ -21,13 +24,7 @@ struct MetronomeSoundPickerHeader: View {
                     }
                 } label: {
                     Image(systemName: "music.note.list")
-                        .foregroundStyle(
-                            LinearGradient(
-                                gradient: Gradient(colors: [.red, .blue]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
+                        .foregroundStyle(schemeStyle.styleGradient(isDarkMode: colorScheme.isDarkMode))
                         .font(.title)
                 }
             }
