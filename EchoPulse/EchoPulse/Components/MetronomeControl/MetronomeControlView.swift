@@ -10,6 +10,7 @@ import SwiftUI
 struct MetronomeControlView: View {
     @State private var viewModel = MetronomeControlViewModel()
     @State private var isShowMenu: Bool = false
+    @State private var isShowSheet: Bool = false
     
     var body: some View {
         ZStack {
@@ -25,15 +26,37 @@ struct MetronomeControlView: View {
                     cornerRadius: 20
                 )
                 
-                MetronomeControlSlider(title: "BPM", value: $viewModel.bpm, range: 40...240, step: 1) {
+                HStack {
+                    Text("BPM: \(String(format: "%.f", viewModel.bpm))")
+                        .font(.headline)
+                    
+                    Button {
+                        isShowSheet.toggle()
+                    } label: {
+                        Image(systemName: "pencil.line")
+                    }
+                }
+                     
+                MetronomeControlSlider(value: $viewModel.bpm, range: 40...240, step: 1) {
                     viewModel.updateBPM(viewModel.bpm)
                 }
                 
-                MetronomeControlSlider(title: "Volume", value: $viewModel.volume, range: 0.0...1.0, step: 0.1, multiplier: 100, unit: "%") {
+                Text("Volume: \(String(format: "%.f", viewModel.volume * 100)) %")
+                    .font(.headline)
+                
+                MetronomeControlSlider(value: $viewModel.volume, range: 0.0...1.0, step: 0.1, multiplier: 100) {
                     viewModel.updateVolume(viewModel.volume)
                 }
             }
             .padding()
+            .sheet(isPresented: $isShowSheet) {
+                MetronomeEditBPMView(bpm: viewModel.bpm, showSheet: $isShowSheet) { newValue in
+                    if let newValue = newValue {
+                        viewModel.updateBPM(newValue)
+                    }
+                }
+                .presentationDetents([.medium])
+            }
             
             MetronomeSideMenuView(isShowMenu: $isShowMenu, selectedSound: $viewModel.sourceType)
         }

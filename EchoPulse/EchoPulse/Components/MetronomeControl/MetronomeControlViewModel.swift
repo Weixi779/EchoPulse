@@ -62,11 +62,13 @@ final class MetronomeControlViewModel {
     }
 
     func updateBPM(_ newValue: Double) {
+        self.bpm = newValue
         self.metronome.updateBPM(bpm: bpm)
         UDUtils.setValue(bpm, for: UDKeys.storageBPM)
     }
 
     func updateVolume(_ newValue: Double) {
+        self.volume = newValue
         self.metronome.updateVolume(volume: volume)
         UDUtils.setValue(volume, for: UDKeys.storageVolume)
     }
