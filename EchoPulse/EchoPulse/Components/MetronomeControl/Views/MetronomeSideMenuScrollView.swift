@@ -12,6 +12,7 @@ struct MetronomeSideMenuScrollView: View {
     
     private let cellHeight: CGFloat = 100
     private let spacing: CGFloat = 25
+    @State private var isInitFinished: Bool = false
     
     private let sources = MetronomeSourceType.allCases
     
@@ -55,6 +56,7 @@ struct MetronomeSideMenuScrollView: View {
                 }
                 .onScrollPhaseChange { oldPhase, newPhase in
                     if oldPhase != .idle && newPhase == .idle {
+                        self.isInitFinished = true
                         withAnimation(.easeInOut) {
                             proxy.scrollTo(selectedSound, anchor: .center)
                         }

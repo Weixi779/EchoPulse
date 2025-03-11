@@ -13,16 +13,18 @@ import Combine
 final class MetronomeControlViewModel {
     var sourceType: MetronomeSourceType {
         didSet {
-            self.metronome.changeSoundType(sourceType)
-            UDUtils.setValue(sourceType, for: UDKeys.storageSourceType)
+            sourceTypeSubject.send(sourceType)
         }
     }
+    
+    var sourceTypeSubject = PassthroughSubject<MetronomeSourceType, Never>()
     
     var bpm: Double
     var volume: Double
     
     var isPlaying = false
     private var metronome: Metronome
+    private var cancellable = Set<AnyCancellable>()
 
     init() {
         let storageBPM = UDUtils.getValue(for: UDKeys.storageBPM)
@@ -35,6 +37,19 @@ final class MetronomeControlViewModel {
         self.metronome = Metronome(bpm: storageBPM, volume: storageVolume, sourceType: storageSourceType)
         
         self.metronome.delegate = self
+        
+        self.addListener()
+    }
+    
+    private func addListener() {
+        sourceTypeSubject
+             .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
+             .sink { [weak self] newSource in
+                 guard let self = self else { return }
+                 self.metronome.changeSoundType(newSource)
+                 UDUtils.setValue(newSource, for: UDKeys.storageSourceType)
+             }
+             .store(in: &cancellable)
     }
 
     func togglePlay() {
