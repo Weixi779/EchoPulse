@@ -68,13 +68,10 @@ final class MetronomePlayer {
     }
     
     private func updateScheduledBufferIfNeeded() {
-        if !self.playerNode.isPlaying {
-            self.playerNode.scheduleBuffer(self.audioBuffer, at: nil, options: [.loops])
-            return
-        }
-        
         playerNode.stop()
         playerNode.scheduleBuffer(self.audioBuffer, at: nil, options: [.loops])
-        playerNode.play()
+        if self.playerNode.isPlaying {
+            playerNode.play()
+        }        
     }
 }
