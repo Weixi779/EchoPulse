@@ -21,18 +21,15 @@ struct MetronomeSideMenuScrollView: View {
                 ScrollView {
                     LazyVStack(spacing: spacing) {
                         ForEach(sources) { source in
-                            Text(source.fileName)
-                                .font(.largeTitle)
+                            MetronomeSideMenuScrollCell(sourceType: source, selectingType: selectedSound)
                                 .frame(height: cellHeight)
-                                .background(Color.gray)
                                 .scrollTargetLayout()
-                                .scrollTransition(
-                                    axis: .vertical
-                                ) { content, phase in
+                                .scrollTransition(axis: .vertical) { content, phase in
                                     content
-                                        .rotationEffect(.degrees(phase.value * -10), anchor: .bottomTrailing)
+                                        .rotationEffect(.degrees(phase.value * -15), anchor: .bottomTrailing)
                                         .offset(x: phase.isIdentity ? 0 : 15)
                                         .opacity(phase.isIdentity ? 1 : 0)
+                                        .scaleEffect(phase.isIdentity ? 1 : 0.5)
                                 }
                         }
                     }
