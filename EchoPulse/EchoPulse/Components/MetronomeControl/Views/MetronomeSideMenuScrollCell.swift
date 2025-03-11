@@ -9,16 +9,11 @@ import SwiftUI
 
 struct MetronomeSideMenuScrollCell: View {
     let sourceType: MetronomeSourceType
-    let selectingType: MetronomeSourceType
+    @Binding var selectingType: MetronomeSourceType
     
 
     private let font: Font = .system(.largeTitle, design: .rounded, weight: .bold)
     private let strokeWidth: CGFloat = 1.5
-
-    init(sourceType: MetronomeSourceType, selectingType: MetronomeSourceType) {
-        self.sourceType = sourceType
-        self.selectingType = selectingType
-    }
     
     var text: String {
         self.sourceType.fileName
@@ -42,16 +37,25 @@ struct MetronomeSideMenuScrollCell: View {
             }
             Text(text)
                 .font(font)
-                .foregroundColor(isSelected ? .yellow : .primary)
+                .foregroundColor(isSelected ? .yellow : .white)
         }
         .opacity(isSelected ? 1 : 0.7)
         .scaleEffect(isSelected ? 1.2 : 0.8)
+        .offset(x: offsetValue)
         .rotationEffect(.degrees(rotationDegrees), anchor: .bottomTrailing)
         .animation(.easeInOut, value: isSelected)
     }
     
+    var indexDifference: Int {
+        sourceType.indexDifference(to: selectingType)
+    }
+    
     var rotationDegrees: Double {
-        Double(sourceType.compare(to: selectingType) * -7)
+        Double(indexDifference * -7)
+    }
+    
+    var offsetValue: Double {
+        Double(abs(indexDifference) * 15)
     }
     
     var strokes: [CGSize] {
@@ -62,6 +66,6 @@ struct MetronomeSideMenuScrollCell: View {
     }
 }
 
-#Preview {
-    MetronomeSideMenuScrollCell(sourceType: .bassDrum, selectingType: .bassDrum)
-}
+//#Preview {
+//    MetronomeSideMenuScrollCell(sourceType: .bassDrum, selectingType: .bassDrum)
+//}

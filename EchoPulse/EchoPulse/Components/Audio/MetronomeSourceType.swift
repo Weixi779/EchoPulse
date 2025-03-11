@@ -57,4 +57,12 @@ extension MetronomeSourceType {
             return 0
         }
     }
+    
+    func indexDifference(to other: MetronomeSourceType) -> Int {
+        guard let selfIndex = Self.allCases.firstIndex(of: self),
+              let otherIndex = Self.allCases.firstIndex(of: other) else {
+            fatalError("所有枚举值都应存在于 allCases 中")
+        }
+        return selfIndex - otherIndex
+    }
 }

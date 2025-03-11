@@ -10,8 +10,8 @@ import SwiftUI
 struct MetronomeSideMenuScrollView: View {
     @Binding var selectedSound: MetronomeSourceType
     
-    private let cellHeight: CGFloat = 150
-    private let spacing: CGFloat = 50
+    private let cellHeight: CGFloat = 100
+    private let spacing: CGFloat = 25
     
     private let sources = MetronomeSourceType.allCases
     
@@ -21,13 +21,13 @@ struct MetronomeSideMenuScrollView: View {
                 ScrollView {
                     LazyVStack(spacing: spacing) {
                         ForEach(sources) { source in
-                            MetronomeSideMenuScrollCell(sourceType: source, selectingType: selectedSound)
+                            MetronomeSideMenuScrollCell(sourceType: source, selectingType: $selectedSound)
                                 .frame(height: cellHeight)
                                 .scrollTargetLayout()
                                 .scrollTransition(axis: .vertical) { content, phase in
                                     content
                                         .rotationEffect(.degrees(phase.value * -15), anchor: .bottomTrailing)
-                                        .offset(x: phase.isIdentity ? 0 : 15)
+                                        .offset(x: phase.isIdentity ? 0 : 45)
                                         .opacity(phase.isIdentity ? 1 : 0)
                                         .scaleEffect(phase.isIdentity ? 1 : 0.5)
                                 }
@@ -47,7 +47,9 @@ struct MetronomeSideMenuScrollView: View {
                     if index >= 0 && index < sources.count {
                         let newItem = sources[index]
                         if selectedSound != newItem {
-                            selectedSound = newItem
+                            withAnimation {
+                                selectedSound = newItem
+                            }
                         }
                     }
                 }
