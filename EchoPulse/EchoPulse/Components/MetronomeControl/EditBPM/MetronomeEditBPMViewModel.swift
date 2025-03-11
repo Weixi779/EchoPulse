@@ -47,7 +47,7 @@ class MetronomeEditBPMViewModel: ObservableObject {
     // 过滤 Publisher：只保留数字字符
     var filteredPublisher: AnyPublisher<String, Never> {
         $inputText
-            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
             .map { input in
                 input.filter { "0123456789".contains($0) }
             }
