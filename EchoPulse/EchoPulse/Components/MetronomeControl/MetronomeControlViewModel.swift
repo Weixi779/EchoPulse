@@ -62,6 +62,13 @@ final class MetronomeControlViewModel {
     }
 
     func updateBPM(_ newValue: Double) {
+        if newValue < 40 {
+            self.bpm = 40
+            return
+        } else if newValue > 240 {
+            self.bpm = 240
+            return
+        }
         self.bpm = newValue
         self.metronome.updateBPM(bpm: bpm)
         UDUtils.setValue(bpm, for: UDKeys.storageBPM)
