@@ -10,7 +10,6 @@ import SwiftUI
 struct MetronomeControlView: View {
     @State private var viewModel = MetronomeControlViewModel()
     @State private var isShowMenu: Bool = false
-    @State private var isShowSheet: Bool = false
     
     var body: some View {
         ZStack {
@@ -30,12 +29,15 @@ struct MetronomeControlView: View {
                     Text("BPM: \(String(format: "%.f", viewModel.bpm))")
                         .font(.headline)
                     
-                    Button {
-                        isShowSheet.toggle()
-                    } label: {
-                        Image(systemName: "pencil.line")
+                    Stepper(value: $viewModel.bpm, step: 1) {
+                        
+                    } onEditingChanged: { editing in
+                        if !editing {
+                            viewModel.updateBPM(viewModel.bpm)
+                        }
                     }
                 }
+                .padding()
                      
                 MetronomeControlSlider(value: $viewModel.bpm, range: 40...240, step: 1) {
                     viewModel.updateBPM(viewModel.bpm)
@@ -49,14 +51,6 @@ struct MetronomeControlView: View {
                 }
             }
             .padding()
-            .sheet(isPresented: $isShowSheet) {
-                MetronomeEditBPMView(bpm: viewModel.bpm, showSheet: $isShowSheet) { newValue in
-                    if let newValue = newValue {
-                        viewModel.updateBPM(newValue)
-                    }
-                }
-                .presentationDetents([.medium])
-            }
             
             MetronomeSideMenuView(isShowMenu: $isShowMenu, selectedSound: $viewModel.sourceType)
         }
