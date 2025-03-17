@@ -1,2 +1,20 @@
 # EchoPulse
-Precise Metronome app build with native iOS technologies
+简易节拍器, 原生iOS项目开发, 采用SwiftUI技术栈开发, 个人练习项目, 现已上线国区AppStore.
+
+## 功能
+
+* 播放指定 BPM 频率音频
+* 后台播放
+* 与其他软件混声
+* 更换播放音频
+* 调节音量
+* 夜间模式
+* 使用一些 iOS18 新特性美化页面
+
+## TODO
+
+* 代码优化 - 采用 Combine 缔造事件流
+* 页面优化 - 优化主页面 与 选择音频页面
+* 小组件
+* 语言本地化
+* 支持更多音频
