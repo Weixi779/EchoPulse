@@ -98,20 +98,29 @@ struct MetronomeControlSlider: View {
         let angle = atan2(deltaY, deltaX)
         // 从y轴0°开始
         let adjustedAngle = angle + .pi / 2.0
-        // 修正角度到0-2π范围
+        // 标准化角度到0-2π范围
         return config.normalizeAngle(adjustedAngle)
     }
-     
+
+    private func isAngleInForbiddenZone(_ angle: CGFloat) -> Bool {
+        let normalizedAngle = config.normalizeAngle(angle)
+        return normalizedAngle > config.endAngle || normalizedAngle < config.startAngle
+    }
+
     private func change(location: CGPoint) {
         let vector = CGVector(dx: location.x, dy: location.y)
         let angle = calculateAngle(from: vector)
-         
+        
+        // 检查是否在禁区
+        if isAngleInForbiddenZone(angle) {
+            return // 禁区内不响应拖动
+        }
+        
         let newValue = config.angleToValue(angle)
-         
+        
         if newValue >= config.minValue && newValue <= config.maxValue {
             controlValue = newValue
             angleValue = angle
-            // 调用回调
             onValueChanged?(newValue)
         }
     }

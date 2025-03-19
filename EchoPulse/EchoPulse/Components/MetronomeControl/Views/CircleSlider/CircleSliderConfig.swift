@@ -17,7 +17,7 @@ struct CircleSliderConfig {
     // slider size
     let frameRadius: CGFloat = 125
     // origin point
-    let tiltAngle: CGFloat = 15
+    let tiltAngle: CGFloat = 20
 }
 
 // MARK: - Length Part
