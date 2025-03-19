@@ -39,16 +39,16 @@ struct MetronomeControlView: View {
                 }
                 .padding()
                      
-                MetronomeControlSlider(value: $viewModel.bpm, range: 40...240, step: 1) {
-                    viewModel.updateBPM(viewModel.bpm)
-                }
+//                MetronomeControlSlider(value: $viewModel.bpm, range: 40...240, step: 1) {
+//                    viewModel.updateBPM(viewModel.bpm)
+//                }
                 
                 Text("Volume: \(String(format: "%.f", viewModel.volume * 100)) %")
                     .font(.headline)
                 
-                MetronomeControlSlider(value: $viewModel.volume, range: 0.0...1.0, step: 0.1, multiplier: 100) {
-                    viewModel.updateVolume(viewModel.volume)
-                }
+//                MetronomeControlSlider(value: $viewModel.volume, range: 0.0...1.0, step: 0.1, multiplier: 100) {
+//                    viewModel.updateVolume(viewModel.volume)
+//                }
             }
             .padding()
             
