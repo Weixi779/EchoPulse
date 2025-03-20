@@ -27,14 +27,10 @@ final class MetronomeControlViewModel {
     private var cancellable = Set<AnyCancellable>()
 
     init() {
-        let storageBPM = UDUtils.getValue(for: UDKeys.storageBPM)
-        let storageVolume = UDUtils.getValue(for: UDKeys.storageVolume)
-        let storageSourceType = UDUtils.getValue(for: UDKeys.storageSourceType)
-        
-        self.bpm = storageBPM
-        self.volume = storageVolume
-        self.sourceType = storageSourceType
-        self.metronome = Metronome(bpm: storageBPM, volume: storageVolume, sourceType: storageSourceType)
+        self.bpm = UserDefaultsUtils.getValue(for: .bpm)
+        self.volume = UserDefaultsUtils.getValue(for: .volume)
+        self.sourceType = UserDefaultsUtils.getValue(for: .sourceType)
+        self.metronome = Metronome(bpm: _bpm, volume: _volume, sourceType: _sourceType)
         
         self.metronome.delegate = self
         
@@ -47,7 +43,7 @@ final class MetronomeControlViewModel {
              .sink { [weak self] newSource in
                  guard let self = self else { return }
                  self.metronome.changeSoundType(newSource)
-                 UDUtils.setValue(newSource, for: UDKeys.storageSourceType)
+                 UserDefaultsUtils.setValue(newSource, for: .sourceType)
              }
              .store(in: &cancellable)
     }
@@ -71,13 +67,13 @@ final class MetronomeControlViewModel {
         }
         self.bpm = newValue
         self.metronome.updateBPM(bpm: bpm)
-        UDUtils.setValue(bpm, for: UDKeys.storageBPM)
+        UserDefaultsUtils.setValue(bpm, for: .bpm)
     }
 
     func updateVolume(_ newValue: Double) {
         self.volume = newValue
         self.metronome.updateVolume(volume: volume)
-        UDUtils.setValue(volume, for: UDKeys.storageVolume)
+        UserDefaultsUtils.setValue(volume, for: .volume)
     }
 }
 
@@ -95,10 +91,4 @@ extension MetronomeControlViewModel: MetronomeDelegate {
             metronome.stop()
         }
     }
-}
-
-extension UDKeys {
-    static let storageBPM = UDKey<Double>("MetronomeControl.BPM", defaultValue: 120)
-    static let storageVolume = UDKey<Double>("MetronomeControl.Volume", defaultValue: 0.5)
-    static let storageSourceType = UDKey<MetronomeSourceType>("MetronomeControl.SourceType", defaultValue: .bassDrum)
 }
