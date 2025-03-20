@@ -9,22 +9,19 @@ import SwiftUI
 
 // MARK: - MetronomeControlSlider
 struct CircleSliderView<Content: View>: View {
+    @Binding var value: Double
     @State private var viewModel: CircleSliderViewModel
     @ViewBuilder var content: (Double) -> Content
-     
-    init(viewModel: CircleSliderViewModel, @ViewBuilder content: @escaping (Double) -> Content) {
-        self._viewModel = State(initialValue: viewModel)
-        self.content = content
-    }
     
     init(
         value: Binding<Double>,
         sliderConfig: SliderConfig,
         tickMarksConfig: TickMarksConfig,
         onValueChanged: ((Double) -> Void)? = nil,
-        onDragComplete: ((Double) -> Void)? = nil,
+        onDragComplete: (() -> Void)? = nil,
         @ViewBuilder content: @escaping (Double) -> Content
     ) {
+        self._value = value
         let model = CircleSliderViewModel(initialValue: value.wrappedValue, sliderConfig: sliderConfig, ticksConfig: tickMarksConfig, onValueChanged: onValueChanged, onDragComplete: onDragComplete)
         
         self._viewModel = State(initialValue: model)
@@ -33,17 +30,22 @@ struct CircleSliderView<Content: View>: View {
     
     var body: some View {
         ZStack {
-            CircleSliderTickMarksView(currentValue: viewModel.value,
+            CircleSliderTickMarksView(currentValue: value,
                                       sliderConfig: viewModel.sliderConfig,
                                       ticksConfig: viewModel.ticksConfig)
             
-            CircleSliderProgressArcView(currentValue: viewModel.value,
+            CircleSliderProgressArcView(currentValue: value,
                                         isDragging: viewModel.isDragging,
                                         sliderConfig: viewModel.sliderConfig)
             
-            CircleSliderKnobView(viewModel: viewModel)
+            CircleSliderKnobView(currentValue: value,
+                                 isDragging: viewModel.isDragging,
+                                 sliderConfig: viewModel.sliderConfig,
+                                 onStartDrag: viewModel.startDrag,
+                                 onDragging: viewModel.handleDrag,
+                                 onEndDrag: viewModel.endDrag)
             
-            content(viewModel.value)
+            content(value)
         }
     }
 }
@@ -124,22 +126,27 @@ fileprivate struct CircleSliderProgressArcView: View {
 
 // MARK: - CircleSliderKnobView
 fileprivate struct CircleSliderKnobView: View {
-    let viewModel: CircleSliderViewModel
+    let currentValue: Double
+    let isDragging: Bool
+    let sliderConfig: SliderConfig
+    var onStartDrag: (() -> Void)
+    var onDragging: ((Double, CGPoint) -> Void)
+    var onEndDrag: (() -> Void)
     
     var body: some View {
         ZStack {
             Circle()
                 .fill(Color.black.opacity(0.2))
-                .frame(width: viewModel.sliderConfig.knobSize + 4, height: viewModel.sliderConfig.knobSize + 4)
+                .frame(width: sliderConfig.knobSize + 4, height: sliderConfig.knobSize + 4)
                 .blur(radius: 3)
-                .offset(y: -viewModel.sliderConfig.frameRadius)
-                .rotationEffect(Angle.radians(Double(viewModel.sliderConfig.valueToAngle(viewModel.value))))
+                .offset(y: -sliderConfig.frameRadius)
+                .rotationEffect(Angle.radians(Double(sliderConfig.valueToAngle(currentValue))))
             
             ZStack {
                 Circle()
                     .fill(
                         LinearGradient(
-                            gradient: Gradient(colors: [viewModel.sliderConfig.style.primaryColor, viewModel.sliderConfig.style.primaryColor.opacity(0.8)]),
+                            gradient: Gradient(colors: [sliderConfig.style.primaryColor, sliderConfig.style.primaryColor.opacity(0.8)]),
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -147,26 +154,26 @@ fileprivate struct CircleSliderKnobView: View {
                 
                 Rectangle()
                     .fill(Color.white)
-                    .frame(width: 2, height: viewModel.sliderConfig.knobRadius)
-                    .offset(y: -viewModel.sliderConfig.knobRadius/2 + 1)
+                    .frame(width: 2, height: sliderConfig.knobRadius)
+                    .offset(y: -sliderConfig.knobRadius/2 + 1)
             }
-            .frame(width: viewModel.sliderConfig.knobSize, height: viewModel.sliderConfig.knobSize)
+            .frame(width: sliderConfig.knobSize, height: sliderConfig.knobSize)
             .shadow(color: Color.black.opacity(0.3), radius: 3, x: 0, y: 2)
-            .padding(viewModel.sliderConfig.gesturePadding)
-            .offset(y: -viewModel.sliderConfig.frameRadius)
-            .rotationEffect(Angle.radians(Double(viewModel.sliderConfig.valueToAngle(viewModel.value))))
+            .padding(sliderConfig.gesturePadding)
+            .offset(y: -sliderConfig.frameRadius)
+            .rotationEffect(Angle.radians(Double(sliderConfig.valueToAngle(currentValue))))
         }
-        .animation(viewModel.isDragging ? nil : .easeOut(duration: 0.15), value: viewModel.value)
+        .animation(isDragging ? nil : .easeOut(duration: 0.15), value: currentValue)
         .gesture(
             DragGesture(minimumDistance: 0.0)
-                .onChanged { value in
-                    if !viewModel.isDragging {
-                        viewModel.startDrag()
+                .onChanged { dragPosition in
+                    if !isDragging {
+                        onStartDrag()
                     }
-                    viewModel.handleDrag(location: value.location)
+                    onDragging(currentValue, dragPosition.location)
                 }
                 .onEnded { _ in
-                    viewModel.endDrag()
+                    onEndDrag()
                 }
         )
     }

@@ -17,13 +17,12 @@ class CircleSliderViewModel {
     let ticksConfig: TickMarksConfig
     
     // State
-    var value: Double
     var currentAngle: CGFloat = 0.0
     var isDragging: Bool = false
     
     // Callbacks
     var onValueChanged: ((Double) -> Void)?
-    var onDragComplete: ((Double) -> Void)?
+    var onDragComplete: (() -> Void)?
     
     // Haptic feedback generator
     private let hapticFeedback = UIImpactFeedbackGenerator(style: .light)
@@ -33,47 +32,16 @@ class CircleSliderViewModel {
         sliderConfig: SliderConfig,
         ticksConfig: TickMarksConfig,
         onValueChanged: ((Double) -> Void)? = nil,
-        onDragComplete: ((Double) -> Void)? = nil
+        onDragComplete: (() -> Void)? = nil
     ) {
-        self.value = max(sliderConfig.minValue, min(sliderConfig.maxValue, initialValue))
         self.sliderConfig = sliderConfig
         self.ticksConfig = ticksConfig
         self.onValueChanged = onValueChanged
         self.onDragComplete = onDragComplete
-        self.currentAngle = sliderConfig.valueToAngle(self.value)
+        self.currentAngle = sliderConfig.valueToAngle(initialValue)
         
         // Prepare haptic feedback
         self.hapticFeedback.prepare()
-    }
-    
-    // Convenience initializer with common parameters
-    convenience init(
-        initialValue: Double,
-        range: ClosedRange<Double> = 40...240,
-        style: CircleSliderStyle = .blue,
-        majorTicks: Int = 10,
-        minorTicksPerMajor: Int = 9,
-        onValueChanged: ((Double) -> Void)? = nil,
-        onDragComplete: ((Double) -> Void)? = nil
-    ) {
-        let sliderConfig = SliderConfig(
-            minValue: range.lowerBound,
-            maxValue: range.upperBound,
-            style: style
-        )
-        
-        let ticksConfig = TickMarksConfig(
-            majorTickCount: majorTicks,
-            minorTicksPerMajor: minorTicksPerMajor
-        )
-        
-        self.init(
-            initialValue: initialValue,
-            sliderConfig: sliderConfig,
-            ticksConfig: ticksConfig,
-            onValueChanged: onValueChanged,
-            onDragComplete: onDragComplete
-        )
     }
     
     // Calculate angle from gesture location
@@ -99,7 +67,7 @@ class CircleSliderViewModel {
     }
     
     // Handle drag gesture
-    func handleDrag(location: CGPoint) {
+    func handleDrag(currentValue: Double, location: CGPoint) {
         let vector = CGVector(dx: location.x, dy: location.y)
         let angle = calculateAngle(from: vector)
         
@@ -113,7 +81,7 @@ class CircleSliderViewModel {
         // Only update if the value is in range and has actually changed
         if newValue >= sliderConfig.minValue && newValue <= sliderConfig.maxValue {
             // Check if we've crossed a major tick
-            let oldMajorIndex = Int((value - sliderConfig.minValue) / (sliderConfig.valueRange / Double(ticksConfig.majorTickCount)))
+            let oldMajorIndex = Int((currentValue - sliderConfig.minValue) / (sliderConfig.valueRange / Double(ticksConfig.majorTickCount)))
             let newMajorIndex = Int((newValue - sliderConfig.minValue) / (sliderConfig.valueRange / Double(ticksConfig.majorTickCount)))
             
             // Provide haptic feedback when crossing major ticks
@@ -121,8 +89,6 @@ class CircleSliderViewModel {
                 hapticFeedback.impactOccurred()
             }
             
-            // Update values
-            value = newValue
             currentAngle = angle
             onValueChanged?(newValue)
         }
@@ -131,6 +97,6 @@ class CircleSliderViewModel {
     // Handle drag end
     func endDrag() {
         isDragging = false
-        onDragComplete?(value)
+        onDragComplete?()
     }
 }

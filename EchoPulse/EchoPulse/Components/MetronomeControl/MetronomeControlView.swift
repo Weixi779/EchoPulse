@@ -26,25 +26,27 @@ struct MetronomeControlView: View {
                 )
                 
                 HStack {
-                    Text("BPM: \(String(format: "%.f", viewModel.bpm))")
+                    Text("BPM: \(String(format: "%.f", viewModel.bpmDataSource.value))")
                         .font(.headline)
                     
-                    Stepper(value: $viewModel.bpm, step: 1) {
-                        
-                    } onEditingChanged: { editing in
-                        if !editing {
-                            viewModel.updateBPM(viewModel.bpm)
-                        }
-                    }
+//                    Stepper(value: $viewModel.bpm, step: 1) {
+//                        
+//                    } onEditingChanged: { editing in
+//                        if !editing {
+//                            viewModel.updateBPM(viewModel.bpm)
+//                        }
+//                    }
                 }
                 .padding()
                      
-                CircleSliderView(value: $viewModel.bpm,
+                CircleSliderView(value: $viewModel.bpmDataSource.value,
                                  sliderConfig: MetronomeControlView.bpmSliderConfig,
-                                 tickMarksConfig: MetronomeControlView.bpmTickMarksConfig
-                ) { value in
-                    viewModel.updateBPM(value)
-                } content: { value in
+                                 tickMarksConfig: MetronomeControlView.bpmTickMarksConfig,
+                                 onValueChanged: { value in
+                    viewModel.bpmDataSource.applyValue(value)
+                }, onDragComplete: {
+                    viewModel.bpmDataSource.commitValue()
+                }) { value in
                     HStack(alignment: .lastTextBaseline) {
                         Text("\(String(format: "%.f", value))")
                             .font(.system(size: 50, weight: .bold, design: .rounded))
@@ -54,21 +56,21 @@ struct MetronomeControlView: View {
                     }
                 }
                 
-                CircleSliderView(value: $viewModel.volume,
-                                 sliderConfig: MetronomeControlView.volumeSliderConfig,
-                                 tickMarksConfig: MetronomeControlView.volumeTickMarksConfig
-                ) { value in
-                    viewModel.updateVolume(value)
-                } content: { value in
-                    HStack(alignment: .lastTextBaseline, spacing: 0) {
-                        Text("\(String(format: "%.f", value * 100))")
-                            .font(.system(size: 20, design: .rounded))
-                        Text("%")
-                            .font(.system(size: 10))
-                    }
-                    .rotationEffect(.degrees(-180))
-                }
-                .rotationEffect(.degrees(-180))
+//                CircleSliderView(value: $viewModel.volume,
+//                                 sliderConfig: MetronomeControlView.volumeSliderConfig,
+//                                 tickMarksConfig: MetronomeControlView.volumeTickMarksConfig
+//                ) { value in
+//                    viewModel.updateVolume(value)
+//                } content: { value in
+//                    HStack(alignment: .lastTextBaseline, spacing: 0) {
+//                        Text("\(String(format: "%.f", value * 100))")
+//                            .font(.system(size: 20, design: .rounded))
+//                        Text("%")
+//                            .font(.system(size: 10))
+//                    }
+//                    .rotationEffect(.degrees(-180))
+//                }
+//                .rotationEffect(.degrees(-180))
             }
             .padding()
             

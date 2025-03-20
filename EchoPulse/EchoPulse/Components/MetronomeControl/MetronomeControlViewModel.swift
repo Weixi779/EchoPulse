@@ -19,7 +19,7 @@ final class MetronomeControlViewModel {
     
     var sourceTypeSubject = PassthroughSubject<MetronomeSourceType, Never>()
     
-    var bpm: Double
+    var bpmDataSource: BPMDataSource = .init()
     var volume: Double
     
     var isPlaying = false
@@ -27,14 +27,22 @@ final class MetronomeControlViewModel {
     private var cancellable = Set<AnyCancellable>()
 
     init() {
-        self.bpm = UserDefaultsUtils.getValue(for: .bpm)
         self.volume = UserDefaultsUtils.getValue(for: .volume)
         self.sourceType = UserDefaultsUtils.getValue(for: .sourceType)
-        self.metronome = Metronome(bpm: _bpm, volume: _volume, sourceType: _sourceType)
+        self.metronome = Metronome(bpm: _bpmDataSource.value, volume: _volume, sourceType: _sourceType)
         
         self.metronome.delegate = self
         
         self.addListener()
+        self.addBPMCommitHooker()
+    }
+    
+    private func addBPMCommitHooker() {
+        bpmDataSource.valueCommitted
+            .sink { bpm in
+                self.metronome.updateBPM(bpm: bpm)
+            }
+            .store(in: &cancellable)
     }
     
     private func addListener() {
@@ -55,19 +63,6 @@ final class MetronomeControlViewModel {
         } else {
             metronome.stop()
         }
-    }
-
-    func updateBPM(_ newValue: Double) {
-        if newValue < 40 {
-            self.bpm = 40
-            return
-        } else if newValue > 240 {
-            self.bpm = 240
-            return
-        }
-        self.bpm = newValue
-        self.metronome.updateBPM(bpm: bpm)
-        UserDefaultsUtils.setValue(bpm, for: .bpm)
     }
 
     func updateVolume(_ newValue: Double) {
