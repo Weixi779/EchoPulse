@@ -60,11 +60,15 @@ struct MetronomeControlView: View {
                 ) { value in
                     viewModel.updateVolume(value)
                 } content: { value in
-                    HStack(alignment: .lastTextBaseline) {
-                        Text("\(String(format: "%.f", value * 100)) %")
-                            .font(.system(size: 20))
+                    HStack(alignment: .lastTextBaseline, spacing: 0) {
+                        Text("\(String(format: "%.f", value * 100))")
+                            .font(.system(size: 20, design: .rounded))
+                        Text("%")
+                            .font(.system(size: 10))
                     }
+                    .rotationEffect(.degrees(-180))
                 }
+                .rotationEffect(.degrees(-180))
             }
             .padding()
             
@@ -76,7 +80,7 @@ struct MetronomeControlView: View {
 extension MetronomeControlView {
     static let bpmSliderConfig: SliderConfig = .init(minValue: 40, maxValue: 240, knobRadius: 15, gesturePadding: 10, frameRadius: 125, tiltAngle: 20, style: .blue)
     static let bpmTickMarksConfig: TickMarksConfig = .init(majorTickCount: 10, minorTicksPerMajor: 9, majorTickLength: 10, minorTickLength: 4, majorTickWidth: 2, minorTickWidth: 1)
-    static let volumeSliderConfig: SliderConfig = .init(minValue: 0, maxValue: 1, knobRadius: 7.5, gesturePadding: 5, frameRadius: 45, style: .orange)
+    static let volumeSliderConfig: SliderConfig = .init(minValue: 0, maxValue: 1, knobRadius: 7.5, gesturePadding: 5, frameRadius: 45, tiltAngle: 40, style: .orange)
     static let volumeTickMarksConfig: TickMarksConfig = .init(majorTickCount: 10, minorTicksPerMajor: 4, majorTickLength: 5, minorTickLength: 2, majorTickWidth: 1, minorTickWidth: 0.5)
 }
 
