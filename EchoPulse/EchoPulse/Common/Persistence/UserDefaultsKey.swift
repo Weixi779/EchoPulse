@@ -24,7 +24,7 @@ enum UserDefaultsKey<T: Codable> {
     var defaultValue: T {
         switch self {
         case .bpm where T.self == Double.self:
-            return 120 as! T
+            return 120.0 as! T
         case .volume where T.self == Double.self:
             return 0.5 as! T
         case .sourceType where T.self == MetronomeSourceType.self:
