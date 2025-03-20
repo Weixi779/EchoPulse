@@ -19,26 +19,13 @@ struct CircleSliderView<Content: View>: View {
     
     init(
         value: Binding<Double>,
-        range: ClosedRange<Double> = 40...240,
-        style: CircleSliderStyle = .blue,
-        majorTicks: Int = 10,
-        minorTicksPerMajor: Int = 9,
+        sliderConfig: SliderConfig,
+        tickMarksConfig: TickMarksConfig,
         onValueChanged: ((Double) -> Void)? = nil,
         onDragComplete: ((Double) -> Void)? = nil,
         @ViewBuilder content: @escaping (Double) -> Content
     ) {
-        let model = CircleSliderViewModel(
-            initialValue: value.wrappedValue,
-            range: range,
-            style: style,
-            majorTicks: majorTicks,
-            minorTicksPerMajor: minorTicksPerMajor,
-            onValueChanged: { newValue in
-                value.wrappedValue = newValue
-                onValueChanged?(newValue)
-            },
-            onDragComplete: onDragComplete
-        )
+        let model = CircleSliderViewModel(initialValue: value.wrappedValue, sliderConfig: sliderConfig, ticksConfig: tickMarksConfig, onValueChanged: onValueChanged, onDragComplete: onDragComplete)
         
         self._viewModel = State(initialValue: model)
         self.content = content
