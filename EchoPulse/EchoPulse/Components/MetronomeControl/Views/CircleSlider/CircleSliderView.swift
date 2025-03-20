@@ -49,7 +49,7 @@ struct CircleSliderView<Content: View>: View {
 }
 
 // MARK: - CircleSliderTickMarksView
-struct CircleSliderTickMarksView: View {
+fileprivate struct CircleSliderTickMarksView: View {
     let currentValue: Double
     let sliderConfig: SliderConfig
     let ticksConfig: TickMarksConfig
@@ -98,7 +98,7 @@ struct CircleSliderTickMarksView: View {
 }
 
 // MARK: - CircleSliderProgressArcView
-struct CircleSliderProgressArcView: View {
+fileprivate struct CircleSliderProgressArcView: View {
     let currentValue: Double
     let isDragging: Bool
     let sliderConfig: SliderConfig
@@ -123,7 +123,7 @@ struct CircleSliderProgressArcView: View {
 }
 
 // MARK: - CircleSliderKnobView
-struct CircleSliderKnobView: View {
+fileprivate struct CircleSliderKnobView: View {
     let viewModel: CircleSliderViewModel
     
     var body: some View {
