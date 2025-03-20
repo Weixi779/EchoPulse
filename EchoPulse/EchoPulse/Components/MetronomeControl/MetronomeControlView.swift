@@ -42,7 +42,9 @@ struct MetronomeControlView: View {
                 Text("Volume: \(String(format: "%.f", viewModel.volume * 100)) %")
                     .font(.headline)
                 
-                CircleSliderView(value: $viewModel.bpm, range: 40...240, style: .blue) { value in
+                CircleSliderView(value: $viewModel.bpm, range: 40...240, style: .blue, onDragComplete: { value in
+                    viewModel.updateBPM(value)
+                }) { value in
                     HStack(alignment: .lastTextBaseline) {
                         Text("\(String(format: "%.f", value))")
                             .font(.system(size: 50, weight: .bold, design: .rounded))

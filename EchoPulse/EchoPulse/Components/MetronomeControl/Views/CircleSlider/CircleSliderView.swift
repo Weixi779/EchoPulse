@@ -46,12 +46,12 @@ struct CircleSliderView<Content: View>: View {
     
     var body: some View {
         ZStack {
-            CircleSliderTickMarksView(value: $viewModel.value,
+            CircleSliderTickMarksView(currentValue: viewModel.value,
                                       sliderConfig: viewModel.sliderConfig,
                                       ticksConfig: viewModel.ticksConfig)
             
-            CircleSliderProgressArcView(value: $viewModel.value,
-                                        isDragging: $viewModel.isDragging,
+            CircleSliderProgressArcView(currentValue: viewModel.value,
+                                        isDragging: viewModel.isDragging,
                                         sliderConfig: viewModel.sliderConfig)
             
             CircleSliderKnobView(viewModel: viewModel)
@@ -63,7 +63,7 @@ struct CircleSliderView<Content: View>: View {
 
 // MARK: - CircleSliderTickMarksView
 struct CircleSliderTickMarksView: View {
-    @Binding var value: Double
+    let currentValue: Double
     let sliderConfig: SliderConfig
     let ticksConfig: TickMarksConfig
     
@@ -72,7 +72,7 @@ struct CircleSliderTickMarksView: View {
             // Major tick marks
             ForEach(0...ticksConfig.majorTickCount, id: \.self) { index in
                 let tickValue = ticksConfig.valueForMajorTick(index, sliderConfig: sliderConfig)
-                let isActive = ticksConfig.isTickActive(tickValue, currentValue: value)
+                let isActive = ticksConfig.isTickActive(tickValue, currentValue: currentValue)
                 
                 tickMark(
                     atAngle: ticksConfig.angleForMajorTick(index, sliderConfig: sliderConfig),
@@ -86,7 +86,7 @@ struct CircleSliderTickMarksView: View {
             ForEach(0..<ticksConfig.majorTickCount, id: \.self) { majorIndex in
                 ForEach(0..<ticksConfig.minorTicksPerMajor, id: \.self) { minorIndex in
                     let minorTickValue = ticksConfig.minorTickValue(majorIndex, minorIndex, sliderConfig: sliderConfig)
-                    let isActive = ticksConfig.isTickActive(minorTickValue, currentValue: value)
+                    let isActive = ticksConfig.isTickActive(minorTickValue, currentValue: currentValue)
                     
                     tickMark(
                         atAngle: ticksConfig.angleForMinorTick(majorIndex, minorIndex, sliderConfig: sliderConfig),
@@ -112,26 +112,26 @@ struct CircleSliderTickMarksView: View {
 
 // MARK: - CircleSliderProgressArcView
 struct CircleSliderProgressArcView: View {
-    @Binding var value: Double
-    @Binding var isDragging: Bool
+    let currentValue: Double
+    let isDragging: Bool
     let sliderConfig: SliderConfig
     
     var body: some View {
         Circle()
             .trim(from: sliderConfig.startRatio,
-                  to: sliderConfig.startRatio + CGFloat(sliderConfig.displayRatio(value)) * (sliderConfig.angleRange / (2 * .pi)))
+                  to: sliderConfig.startRatio + CGFloat(sliderConfig.displayRatio(currentValue)) * (sliderConfig.angleRange / (2 * .pi)))
             .stroke(
                 AngularGradient(
                     gradient: Gradient(colors: [sliderConfig.style.primaryColor.opacity(0.7), sliderConfig.style.primaryColor]),
                     center: .center,
                     startAngle: .degrees(Double(sliderConfig.startAngle) * 180 / .pi - 90),
-                    endAngle: .degrees(Double(sliderConfig.valueToAngle(value)) * 180 / .pi - 90)
+                    endAngle: .degrees(Double(sliderConfig.valueToAngle(currentValue)) * 180 / .pi - 90)
                 ),
                 style: StrokeStyle(lineWidth: 8, lineCap: .round)
             )
             .frame(width: sliderConfig.frameSize, height: sliderConfig.frameSize)
             .rotationEffect(.degrees(-90))
-            .animation(isDragging ? nil : .easeOut(duration: 0.15), value: value)
+            .animation(isDragging ? nil : .easeOut(duration: 0.15), value: currentValue)
     }
 }
 
