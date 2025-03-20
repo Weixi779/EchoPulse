@@ -45,7 +45,7 @@ struct MetronomeControlView: View {
             }
             .padding()
             
-            MetronomeSideMenuView(isShowMenu: $isShowMenu, selectedSound: $viewModel.sourceType)
+            MetronomeSideMenuView(viewModel: $viewModel, isShowMenu: $isShowMenu)
         }
     }
 }

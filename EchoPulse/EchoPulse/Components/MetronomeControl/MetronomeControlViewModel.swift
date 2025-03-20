@@ -11,30 +11,30 @@ import Combine
 
 @Observable
 final class MetronomeControlViewModel {
-    var sourceType: MetronomeSourceType {
-        didSet {
-            sourceTypeSubject.send(sourceType)
-        }
-    }
-    
-    var sourceTypeSubject = PassthroughSubject<MetronomeSourceType, Never>()
-    
     var bpmDataSource: BPMDataSource = .init()
     var volumeDataSource: VolumeDataSource = .init()
+    var sourceTypeDataSource: SourceTypeDataSource = .init()
     
     var isPlaying = false
     private var metronome: Metronome
     private var cancellable = Set<AnyCancellable>()
 
     init() {
-        self.sourceType = UserDefaultsUtils.getValue(for: .sourceType)
-        self.metronome = Metronome(bpm: _bpmDataSource.value, volume: _volumeDataSource.value, sourceType: _sourceType)
+        self.metronome = Metronome(
+            bpm: _bpmDataSource.value,
+            volume: _volumeDataSource.value,
+            sourceType: _sourceTypeDataSource.value
+        )
         
         self.metronome.delegate = self
         
-        self.addListener()
+        self.addListeners()
+    }
+    
+    private func addListeners() {
         self.addBPMCommitHooker()
         self.addVolumeCommitHooker()
+        self.addSourceTypeCommitHooker()
     }
     
     private func addBPMCommitHooker() {
@@ -53,15 +53,12 @@ final class MetronomeControlViewModel {
             .store(in: &cancellable)
     }
     
-    private func addListener() {
-        sourceTypeSubject
-             .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
-             .sink { [weak self] newSource in
-                 guard let self = self else { return }
-                 self.metronome.changeSoundType(newSource)
-                 UserDefaultsUtils.setValue(newSource, for: .sourceType)
-             }
-             .store(in: &cancellable)
+    private func addSourceTypeCommitHooker() {
+        sourceTypeDataSource.valueCommitted
+            .sink { sourceType in
+                self.metronome.changeSoundType(sourceType)
+            }
+            .store(in: &cancellable)
     }
 
     func togglePlay() {

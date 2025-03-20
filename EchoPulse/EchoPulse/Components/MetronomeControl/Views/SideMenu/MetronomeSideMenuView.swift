@@ -11,8 +11,8 @@ struct MetronomeSideMenuView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.schemeStyle) var schemeStyle
     
+    @Binding var viewModel: MetronomeControlViewModel
     @Binding var isShowMenu: Bool
-    @Binding var selectedSound: MetronomeSourceType
     
     var body: some View {
         ZStack {
@@ -34,7 +34,17 @@ struct MetronomeSideMenuView: View {
                             .foregroundStyle(schemeStyle.styleGradient(isDarkMode: colorScheme.isDarkMode))
                             .ignoresSafeArea()
                         
-                        MetronomeSideMenuScrollView(selectedSound: $selectedSound)
+                        MetronomeSideMenuScrollView(
+                            selectedSound: $viewModel.sourceTypeDataSource.value,
+                            onValueApply: { newValue in
+                                withAnimation {
+                                    viewModel.sourceTypeDataSource.applyValue(newValue)
+                                }
+                            },
+                            onValueCommit: {
+                                viewModel.sourceTypeDataSource.commitValue()
+                            }
+                        )
                     }
                     .frame(maxWidth: 250)
                 }
@@ -47,11 +57,12 @@ struct MetronomeSideMenuView: View {
 #Preview {
     struct PreviewWrapper: View {
         @State var selectedSound: MetronomeSourceType = .bassDrum
+        @State var viewModel: MetronomeControlViewModel = .init()
         
         var body: some View {
             MetronomeSideMenuView(
-                isShowMenu: .constant(true),
-                selectedSound: $selectedSound
+                viewModel: $viewModel,
+                isShowMenu: .constant(true)
             )
         }
     }

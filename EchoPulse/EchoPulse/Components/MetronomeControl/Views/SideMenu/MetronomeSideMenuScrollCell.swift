@@ -44,12 +44,11 @@ struct MetronomeSideMenuScrollCell: View {
             strokeWidth: 3.0
         )
         .opacity(isSelected ? 1 : 0.7)
-        .animation(.easeInOut(duration: 0.25).delay(0.05), value: isSelected)
         .scaleEffect(isSelected ? 1.2 : 0.8)
-        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isSelected)
         .offset(x: offsetValue)
         .rotationEffect(.degrees(rotationDegrees), anchor: .bottomTrailing)
-        .animation(.easeInOut(duration: 0.35).delay(0.05), value: isSelected)
+        .animation(.easeInOut, value: isSelected)
+
     }
     
     // 使用AttributedString实现描边效果
