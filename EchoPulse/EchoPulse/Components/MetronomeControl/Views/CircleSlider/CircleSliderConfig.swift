@@ -6,61 +6,109 @@
 //
 
 import Foundation
+import SwiftUI
 
-struct CircleSliderConfig {
-    // value range
-    let minValue: CGFloat = 40
-    let maxValue: CGFloat = 240
-    // knob setting
-    let knobRadius: CGFloat = 15
-    let gesturePadding: CGFloat = 10
-    // slider size
-    let frameRadius: CGFloat = 125
-    // origin point
-    let tiltAngle: CGFloat = 20
-}
-
-// MARK: - Length Part
-extension CircleSliderConfig {
-    var frameSize: CGFloat { frameRadius * 2 }
-    var knobSize: CGFloat { knobRadius * 2 }
+// MARK: - CircleSliderStyle enum
+enum CircleSliderStyle {
+    case blue
+    case green
+    case orange
     
-    var valueRange: CGFloat { maxValue - minValue }
-    var knobDeltaValue: CGFloat { knobRadius + gesturePadding }
+    var primaryColor: Color {
+        switch self {
+        case .blue: return Color.blue
+        case .green: return Color.green
+        case .orange: return Color(red: 0.95, green: 0.5, blue: 0.1)
+        }
+    }
     
-    func displayRatio(_ current: CGFloat) -> CGFloat {
-        return (current - minValue) / valueRange
+    var secondaryColor: Color {
+        switch self {
+        case .blue: return Color.blue.opacity(0.7)
+        case .green: return Color.green.opacity(0.7)
+        case .orange: return Color(red: 0.95, green: 0.5, blue: 0.1).opacity(0.7)
+        }
+    }
+    
+    var progressGradient: LinearGradient {
+        LinearGradient(
+            gradient: Gradient(colors: [primaryColor.opacity(0.7), primaryColor]),
+            startPoint: .leading,
+            endPoint: .trailing
+        )
     }
 }
 
-// MARK: - Angle Part
-extension CircleSliderConfig {
+// MARK: - SliderConfig
+/// Main configuration for the slider including value range and physical dimensions
+struct SliderConfig {
+    // Value range
+    let minValue: Double
+    let maxValue: Double
+    // Knob setting
+    let knobRadius: CGFloat
+    let gesturePadding: CGFloat
+    // Slider size
+    let frameRadius: CGFloat
+    // Origin point (degrees)
+    let tiltAngle: CGFloat
+    // Style
+    var style: CircleSliderStyle = .blue
+    
+    init(
+        minValue: Double = 40,
+        maxValue: Double = 240,
+        knobRadius: CGFloat = 15,
+        gesturePadding: CGFloat = 10,
+        frameRadius: CGFloat = 125,
+        tiltAngle: CGFloat = 20,
+        style: CircleSliderStyle = .blue
+    ) {
+        self.minValue = minValue
+        self.maxValue = maxValue
+        self.knobRadius = knobRadius
+        self.gesturePadding = gesturePadding
+        self.frameRadius = frameRadius
+        self.tiltAngle = tiltAngle
+        self.style = style
+    }
+    
+    // Computed properties
+    var frameSize: CGFloat { frameRadius * 2 }
+    var knobSize: CGFloat { knobRadius * 2 }
+    var valueRange: Double { maxValue - minValue }
+    var knobDeltaValue: CGFloat { knobRadius + gesturePadding }
+    
+    // Convert between value and ratio
+    func displayRatio(_ current: Double) -> Double {
+        return (current - minValue) / valueRange
+    }
+    
+    // Angle calculations
     var startAngle: CGFloat { tiltAngle * .pi / 180 }
     var endAngle: CGFloat { (360 - tiltAngle) * .pi / 180 }
     var angleRange: CGFloat { endAngle - startAngle }
-    
     var startRatio: CGFloat { startAngle / (2 * .pi) }
     var endRatio: CGFloat { endAngle / (2 * .pi) }
     
-    // 将值转换为旋转角度（弧度）
-    func valueToAngle(_ value: CGFloat) -> CGFloat {
+    // Convert value to rotation angle (radians)
+    func valueToAngle(_ value: Double) -> CGFloat {
         let clampedValue = max(minValue, min(maxValue, value))
-        return startAngle + (displayRatio(clampedValue) * angleRange)
+        return startAngle + CGFloat(displayRatio(clampedValue) * Double(angleRange))
     }
     
-    // 将角度转换为值
-    func angleToValue(_ angle: CGFloat) -> CGFloat {
+    // Convert angle to value
+    func angleToValue(_ angle: CGFloat) -> Double {
         let normalizedAngle = normalizeAngle(angle)
         if normalizedAngle < startAngle || normalizedAngle > endAngle {
-            // 如果角度超出范围，返回最近的边界值
             return normalizedAngle < startAngle ? minValue : maxValue
         }
         
-        let ratio = (normalizedAngle - startAngle) / angleRange
+        let ratio = Double((normalizedAngle - startAngle) / angleRange)
         return minValue + (ratio * valueRange)
     }
     
-    // 标准化角度到0-2π
+    // Normalize angle to 0-2π
     func normalizeAngle(_ angle: CGFloat) -> CGFloat {
         var result = angle
         while result < 0 {
@@ -70,5 +118,65 @@ extension CircleSliderConfig {
             result -= 2 * .pi
         }
         return result
+    }
+}
+
+// MARK: - TickMarksConfig
+/// Configuration specifically for tick marks
+struct TickMarksConfig {
+    let majorTickCount: Int
+    let minorTicksPerMajor: Int
+    let majorTickLength: CGFloat
+    let minorTickLength: CGFloat
+    let majorTickWidth: CGFloat
+    let minorTickWidth: CGFloat
+    
+    init(
+        majorTickCount: Int = 10,
+        minorTicksPerMajor: Int = 9,
+        majorTickLength: CGFloat = 10,
+        minorTickLength: CGFloat = 4,
+        majorTickWidth: CGFloat = 2,
+        minorTickWidth: CGFloat = 1
+    ) {
+        self.majorTickCount = majorTickCount
+        self.minorTicksPerMajor = minorTicksPerMajor
+        self.majorTickLength = majorTickLength
+        self.minorTickLength = minorTickLength
+        self.majorTickWidth = majorTickWidth
+        self.minorTickWidth = minorTickWidth
+    }
+    
+    // Calculate value for a major tick based on the slider config
+    func valueForMajorTick(_ index: Int, sliderConfig: SliderConfig) -> Double {
+        return sliderConfig.minValue + (Double(index) / Double(majorTickCount)) * sliderConfig.valueRange
+    }
+    
+    // Calculate angle for a major tick
+    func angleForMajorTick(_ index: Int, sliderConfig: SliderConfig) -> CGFloat {
+        let value = valueForMajorTick(index, sliderConfig: sliderConfig)
+        return sliderConfig.valueToAngle(value)
+    }
+    
+    // Calculate angle for a minor tick
+    func angleForMinorTick(_ majorIndex: Int, _ minorIndex: Int, sliderConfig: SliderConfig) -> CGFloat {
+        let majorValue = valueForMajorTick(majorIndex, sliderConfig: sliderConfig)
+        let nextMajorValue = valueForMajorTick(majorIndex + 1, sliderConfig: sliderConfig)
+        let minorStep = (nextMajorValue - majorValue) / Double(minorTicksPerMajor + 1)
+        let minorValue = majorValue + Double(minorIndex + 1) * minorStep
+        return sliderConfig.valueToAngle(minorValue)
+    }
+    
+    // Check if tick is active (passed by the current value)
+    func isTickActive(_ tickValue: Double, currentValue: Double) -> Bool {
+        return tickValue <= currentValue
+    }
+    
+    // Get minor tick value
+    func minorTickValue(_ majorIndex: Int, _ minorIndex: Int, sliderConfig: SliderConfig) -> Double {
+        let majorValue = valueForMajorTick(majorIndex, sliderConfig: sliderConfig)
+        let nextMajorValue = valueForMajorTick(majorIndex + 1, sliderConfig: sliderConfig)
+        let minorStep = (nextMajorValue - majorValue) / Double(minorTicksPerMajor + 1)
+        return majorValue + Double(minorIndex + 1) * minorStep
     }
 }
