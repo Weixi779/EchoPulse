@@ -15,17 +15,15 @@ struct MetronomeControlToggleButton: View {
     let soundName: String
     var onToggle: () -> Void
     private let height: CGFloat
-    private let cornerRadius: CGFloat
+    private let cornerRadius: CGFloat = 20
     
     @State private var animationTrigger = false
-    @State private var pulseScale: CGFloat = 1.0
 
-    init(isPlaying: Binding<Bool>, soundName: String, onToggle: @escaping () -> Void, height: CGFloat, cornerRadius: CGFloat) {
+    init(isPlaying: Binding<Bool>, soundName: String, onToggle: @escaping () -> Void, height: CGFloat) {
         self._isPlaying = isPlaying
         self.soundName = soundName
         self.onToggle = onToggle
         self.height = height
-        self.cornerRadius = cornerRadius
     }
 
     var body: some View {
@@ -36,6 +34,7 @@ struct MetronomeControlToggleButton: View {
         }
         .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
         .animation(.easeInOut(duration: 0.3), value: isPlaying)
     }
     
@@ -62,7 +61,6 @@ struct MetronomeControlToggleButton: View {
                                     ),
                                     lineWidth: 2.5
                                 )
-                                .scaleEffect(pulseScale)
                         }
                 }
                 .transition(.opacity)
