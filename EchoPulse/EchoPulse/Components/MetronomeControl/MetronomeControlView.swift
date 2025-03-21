@@ -54,7 +54,7 @@ struct MetronomeControlView: View {
                 MetronomeControlToggleButton(
                     isPlaying: $viewModel.isPlaying,
                     onToggle: { viewModel.togglePlay() },
-                    height: 60,
+                    height: 80,
                     cornerRadius: 20
                 )
                 .padding()

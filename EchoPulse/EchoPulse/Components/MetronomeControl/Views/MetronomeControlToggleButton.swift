@@ -16,6 +16,7 @@ struct MetronomeControlToggleButton: View {
     private let height: CGFloat
     private let cornerRadius: CGFloat
     
+    @State private var animationTrigger = false
     @State private var pulseScale: CGFloat = 1.0
 
     init(isPlaying: Binding<Bool>, onToggle: @escaping () -> Void, height: CGFloat, cornerRadius: CGFloat) {
@@ -26,15 +27,10 @@ struct MetronomeControlToggleButton: View {
     }
 
     var body: some View {
-        Button {
-            onToggle()
-        } label: {
-            ZStack {
-                glassBackground
-                
-                Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                    .foregroundStyle(.white)
-            }
+        ZStack {
+            glassBackground
+            
+            controlContent
         }
         .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
@@ -70,5 +66,44 @@ struct MetronomeControlToggleButton: View {
                 .transition(.opacity)
             }
         }
+    }
+    
+    private var controlContent: some View {
+        HStack(spacing: 16) {
+            Image(systemName: "music.note")
+                .resizable()
+                .scaledToFit()
+                .frame(width: height * 0.4, height: height * 0.4)
+                .foregroundStyle(primaryColor.opacity(0.7))
+            
+            Divider()
+                .frame(height: height * 0.4)
+                .opacity(0.5)
+            
+            Spacer()
+            
+            Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                .resizable()
+                .frame(width: height * 0.3, height: height * 0.3)
+                .foregroundStyle(primaryColor.opacity(0.7))
+                .contentTransition(.symbolEffect(.replace))
+                .symbolEffect(.bounce, options: .speed(1.5), value: animationTrigger)
+                .onTapGesture {
+                    onClickPlayback()
+                }
+        }
+        .padding(.horizontal, 24)
+    }
+    
+    private func onClickPlayback() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            onToggle()
+        }
+        
+        animationTrigger.toggle()
+    }
+    
+    var primaryColor: Color {
+        return colorScheme.isDarkMode ? .white : .black
     }
 }
