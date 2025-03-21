@@ -51,11 +51,11 @@ struct MetronomeControlView: View {
                     volumeCircleSlider
                 }
              
-                MetronomeControlToggleButton(
+                MetronomeSoundControlBar(
                     isPlaying: $viewModel.isPlaying,
-                    soundName: viewModel.sourceTypeDataSource.value.fileName,
+                    sourceDataSource: viewModel.sourceTypeDataSource,
                     onToggle: { viewModel.togglePlay() },
-                    height: 75
+                    height: 60
                 )
                 .padding()
             }

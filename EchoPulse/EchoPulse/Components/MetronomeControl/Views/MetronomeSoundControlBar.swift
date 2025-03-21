@@ -1,5 +1,5 @@
 //
-//  MetronomeToggleButton.swift
+//  MetronomeSoundControlBar.swift
 //  EchoPulse
 //
 //  Created by 孙世伟 on 2025/2/10.
@@ -7,21 +7,22 @@
 
 import SwiftUI
 
-struct MetronomeControlToggleButton: View {
+struct MetronomeSoundControlBar: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.schemeStyle) var schemeStyle
     
     @Binding var isPlaying: Bool
-    let soundName: String
+    var sourceDataSource: SourceTypeDataSource
     var onToggle: () -> Void
     private let height: CGFloat
     private let cornerRadius: CGFloat = 20
     
     @State private var animationTrigger = false
+    @State private var isShowingSoundSelection = false
 
-    init(isPlaying: Binding<Bool>, soundName: String, onToggle: @escaping () -> Void, height: CGFloat) {
+    init(isPlaying: Binding<Bool>, sourceDataSource: SourceTypeDataSource, onToggle: @escaping () -> Void, height: CGFloat) {
         self._isPlaying = isPlaying
-        self.soundName = soundName
+        self.sourceDataSource = sourceDataSource
         self.onToggle = onToggle
         self.height = height
     }
@@ -36,6 +37,11 @@ struct MetronomeControlToggleButton: View {
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
         .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
         .animation(.easeInOut(duration: 0.3), value: isPlaying)
+        .sheet(isPresented: $isShowingSoundSelection) {
+            MetronomeSoundSelectionView(dataSource: sourceDataSource)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
     }
     
     private var glassBackground: some View {
@@ -70,17 +76,31 @@ struct MetronomeControlToggleButton: View {
     
     private var controlContent: some View {
         HStack(spacing: 16) {
-            Image(systemName: "music.note")
-                .resizable()
-                .scaledToFit()
-                .frame(width: height * 0.4, height: height * 0.4)
-                .foregroundStyle(primaryColor.opacity(0.7))
-            
-            Divider()
-                .frame(height: height * 0.4)
-                .opacity(0.5)
-            
-            Text(soundName)
+            HStack {
+                Image(systemName: sourceDataSource.value.systemIconName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: height * 0.4, height: height * 0.4)
+                    .foregroundStyle(primaryColor.opacity(0.7))
+                
+                Divider()
+                    .frame(height: height * 0.4)
+                    .opacity(0.5)
+                
+                Text(sourceDataSource.value.fileName)
+                    .font(.system(size: 16, weight: .medium, design: .rounded))
+                    .lineLimit(1)
+                    .opacity(isPlaying ? 0.9 : 0.7)
+                
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+                    .opacity(isPlaying ? 0.3 : 0.7)
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                showSoundSelection()
+            }
             
             Spacer()
             
@@ -103,6 +123,10 @@ struct MetronomeControlToggleButton: View {
         }
         
         animationTrigger.toggle()
+    }
+    
+    private func showSoundSelection() {
+          isShowingSoundSelection = true
     }
     
     var primaryColor: Color {
