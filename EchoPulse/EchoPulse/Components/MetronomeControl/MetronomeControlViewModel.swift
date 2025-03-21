@@ -40,7 +40,7 @@ final class MetronomeControlViewModel {
     private func addBPMCommitHooker() {
         bpmDataSource.valueCommitted
             .sink { bpm in
-                self.metronome.updateBPM(bpm: bpm)
+                self.metronome.setBPM(bpm)
             }
             .store(in: &cancellable)
     }
@@ -48,7 +48,7 @@ final class MetronomeControlViewModel {
     private func addVolumeCommitHooker() {
         volumeDataSource.valueCommitted
             .sink { volume in
-                self.metronome.updateVolume(volume: volume)
+                self.metronome.setVolume(volume)
             }
             .store(in: &cancellable)
     }
@@ -56,7 +56,7 @@ final class MetronomeControlViewModel {
     private func addSourceTypeCommitHooker() {
         sourceTypeDataSource.valueCommitted
             .sink { sourceType in
-                self.metronome.changeSoundType(sourceType)
+                self.metronome.setSoundType(sourceType)
             }
             .store(in: &cancellable)
     }
