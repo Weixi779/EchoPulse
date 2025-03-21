@@ -12,6 +12,7 @@ struct MetronomeControlToggleButton: View {
     @Environment(\.schemeStyle) var schemeStyle
     
     @Binding var isPlaying: Bool
+    let soundName: String
     var onToggle: () -> Void
     private let height: CGFloat
     private let cornerRadius: CGFloat
@@ -19,8 +20,9 @@ struct MetronomeControlToggleButton: View {
     @State private var animationTrigger = false
     @State private var pulseScale: CGFloat = 1.0
 
-    init(isPlaying: Binding<Bool>, onToggle: @escaping () -> Void, height: CGFloat, cornerRadius: CGFloat) {
+    init(isPlaying: Binding<Bool>, soundName: String, onToggle: @escaping () -> Void, height: CGFloat, cornerRadius: CGFloat) {
         self._isPlaying = isPlaying
+        self.soundName = soundName
         self.onToggle = onToggle
         self.height = height
         self.cornerRadius = cornerRadius
@@ -79,6 +81,8 @@ struct MetronomeControlToggleButton: View {
             Divider()
                 .frame(height: height * 0.4)
                 .opacity(0.5)
+            
+            Text(soundName)
             
             Spacer()
             

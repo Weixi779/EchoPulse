@@ -53,6 +53,7 @@ struct MetronomeControlView: View {
              
                 MetronomeControlToggleButton(
                     isPlaying: $viewModel.isPlaying,
+                    soundName: viewModel.sourceTypeDataSource.value.fileName,
                     onToggle: { viewModel.togglePlay() },
                     height: 80,
                     cornerRadius: 20
