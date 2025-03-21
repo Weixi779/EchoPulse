@@ -81,8 +81,6 @@ extension MetronomeControlView {
             HStack(alignment: .lastTextBaseline) {
                 Text("\(String(format: "%.f", value))")
                     .font(.system(size: 60, weight: .bold, design: .rounded))
-                    .contentTransition(.identity)
-                    .animation(.easeInOut, value: value)
                 
                 Text("BPM")
                     .font(.system(size: 12))

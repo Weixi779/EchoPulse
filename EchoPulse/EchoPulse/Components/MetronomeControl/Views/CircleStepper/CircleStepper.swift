@@ -74,6 +74,8 @@ struct CircleStepper: View {
                 // tigger = 0.5s
                 if longPressTimer > 5 {
                     onApply(performStep())
+                    let generator = UIImpactFeedbackGenerator(style: .light)
+                    generator.impactOccurred(intensity: 0.5)
                 }
             }
         }
