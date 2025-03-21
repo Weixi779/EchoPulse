@@ -26,7 +26,7 @@ struct CircleStepper: View {
     let onApply: ((Double) -> Void)
     let onCommit: (() -> Void)
     
-    init(value: Binding<Double>, type: CircleStepperType, range: ClosedRange<Double>, step: Double = 1, size: CGFloat = 30, onApply: @escaping ((Double) -> Void), onCommit: @escaping (() -> Void)) {
+    init(value: Binding<Double>, type: CircleStepperType, range: ClosedRange<Double>, step: Double = 1, size: CGFloat = 40, onApply: @escaping ((Double) -> Void), onCommit: @escaping (() -> Void)) {
         _value = value
         self.range = range
         self.type = type

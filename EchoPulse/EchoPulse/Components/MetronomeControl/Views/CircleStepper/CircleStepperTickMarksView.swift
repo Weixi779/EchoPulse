@@ -10,9 +10,9 @@ import SwiftUI
 
 struct CircleStepperTickMarksView: View {
     var radius: CGFloat
-    var tickMarkLength: CGFloat = 8
+    var tickMarkLength: CGFloat = 5
     var tickMarkWidth: CGFloat = 1.5
-    var tickMarkNumber: Int = 100
+    var tickMarkNumber: Int = 50
     
     let primaryColor: Color = Color.primary
     
@@ -50,5 +50,5 @@ struct CircleStepperTickMarksView: View {
 }
 
 #Preview {
-    CircleStepperTickMarksView(radius: 50)
+    CircleStepperTickMarksView(radius: 25)
 }
