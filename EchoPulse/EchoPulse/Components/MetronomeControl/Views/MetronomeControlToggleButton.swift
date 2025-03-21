@@ -13,17 +13,15 @@ struct MetronomeControlToggleButton: View {
     
     @Binding var isPlaying: Bool
     var onToggle: () -> Void
-    private let width: CGFloat
     private let height: CGFloat
-    private let iconSize: CGFloat
     private let cornerRadius: CGFloat
+    
+    @State private var pulseScale: CGFloat = 1.0
 
-    init(isPlaying: Binding<Bool>, onToggle: @escaping () -> Void, width: CGFloat, height: CGFloat, iconSize: CGFloat, cornerRadius: CGFloat) {
+    init(isPlaying: Binding<Bool>, onToggle: @escaping () -> Void, height: CGFloat, cornerRadius: CGFloat) {
         self._isPlaying = isPlaying
         self.onToggle = onToggle
-        self.width = width
         self.height = height
-        self.iconSize = iconSize
         self.cornerRadius = cornerRadius
     }
 
@@ -32,25 +30,45 @@ struct MetronomeControlToggleButton: View {
             onToggle()
         } label: {
             ZStack {
-                if !isPlaying {
-                    schemeStyle
-                        .styleGradient(isDarkMode: colorScheme.isDarkMode)
-                        .transition(.opacity)
-                } else {
-                    TimelineView(.animation) { timeline in
-                        schemeStyle.animatedStyleGradient(for: timeline.date, isDarkMode: colorScheme.isDarkMode)
-                    }
-                    .transition(.opacity)
-                }
+                glassBackground
                 
                 Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                    .resizable()
-                    .frame(width: iconSize, height: iconSize)
                     .foregroundStyle(.white)
             }
         }
-        .frame(width: width, height: height)
+        .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
         .animation(.easeInOut(duration: 0.3), value: isPlaying)
+    }
+    
+    private var glassBackground: some View {
+        ZStack {
+            if !isPlaying {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .fill(.ultraThinMaterial)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .stroke(schemeStyle.styleGradient(isDarkMode: colorScheme.isDarkMode), lineWidth: 1.5)
+                    }
+                    .transition(.opacity)
+            } else {
+                TimelineView(.animation(minimumInterval: 0.1, paused: !isPlaying)) { timeline in
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(.ultraThinMaterial)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: cornerRadius)
+                                .stroke(
+                                    schemeStyle.animatedStyleGradient(
+                                        for: timeline.date,
+                                        isDarkMode: colorScheme.isDarkMode
+                                    ),
+                                    lineWidth: 2.5
+                                )
+                                .scaleEffect(pulseScale)
+                        }
+                }
+                .transition(.opacity)
+            }
+        }
     }
 }
