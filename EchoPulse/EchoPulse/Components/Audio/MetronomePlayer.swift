@@ -14,6 +14,7 @@ final class MetronomePlayer {
     private var playerNode = AVAudioPlayerNode()
     private var timePitch = AVAudioUnitTimePitch()
     private var audioBuffer: AVAudioPCMBuffer
+    private var isBufferScheduled = false
     
     private var logger = Logger(subsystem: "Audio", category: "MetronomePlayer")
 
@@ -48,6 +49,8 @@ final class MetronomePlayer {
     
     public func play() {
         if !playerNode.isPlaying {
+            // 确保每次播放前都重新调度缓冲区
+            scheduleBuffer()
             playerNode.play()
         }
     }
@@ -55,6 +58,8 @@ final class MetronomePlayer {
     public func stop() {
         if self.playerNode.isPlaying {
             playerNode.stop()
+            // 重置缓冲区调度状态
+            isBufferScheduled = false
         }
     }
 
@@ -64,15 +69,35 @@ final class MetronomePlayer {
 
     public func updateBuffer(buffer: AVAudioPCMBuffer) {
         self.audioBuffer = buffer
-        self.updateScheduledBufferIfNeeded()
+        
+        // 如果播放器正在播放，需要更新调度的缓冲区
+        if self.playerNode.isPlaying {
+            updateScheduledBufferIfNeeded()
+        } else {
+            // 重置调度状态，但不立即调度
+            isBufferScheduled = false
+        }
+    }
+    
+    private func scheduleBuffer() {
+        playerNode.scheduleBuffer(self.audioBuffer, at: nil, options: [.loops])
+        isBufferScheduled = true
     }
     
     private func updateScheduledBufferIfNeeded() {
         let needReplay = self.playerNode.isPlaying
         playerNode.stop()
-        playerNode.scheduleBuffer(self.audioBuffer, at: nil, options: [.loops])
+        
+        // 重新调度缓冲区
+        scheduleBuffer()
+        
         if needReplay {
             playerNode.play()
-        }        
+        }
+    }
+    
+    deinit {
+        playerNode.stop()
+        audioEngine.stop()
     }
 }
