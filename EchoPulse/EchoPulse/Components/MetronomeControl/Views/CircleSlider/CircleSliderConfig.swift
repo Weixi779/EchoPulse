@@ -17,7 +17,7 @@ enum CircleSliderStyle {
     var primaryColor: Color {
         switch self {
         case .blue: return Color.blue
-        case .green: return Color.green
+        case .green: return Color(red: 0.2, green: 0.75, blue: 0.5)
         case .orange: return Color(red: 0.95, green: 0.5, blue: 0.1)
         }
     }
@@ -25,18 +25,19 @@ enum CircleSliderStyle {
     var secondaryColor: Color {
         switch self {
         case .blue: return Color.blue.opacity(0.7)
-        case .green: return Color.green.opacity(0.7)
+        case .green: return Color(red: 0.1, green: 0.65, blue: 0.45).opacity(0.8)
         case .orange: return Color(red: 0.95, green: 0.5, blue: 0.1).opacity(0.7)
         }
     }
     
     var progressGradient: LinearGradient {
         LinearGradient(
-            gradient: Gradient(colors: [primaryColor.opacity(0.7), primaryColor]),
+            gradient: Gradient(colors: [secondaryColor, primaryColor]),
             startPoint: .leading,
             endPoint: .trailing
         )
     }
+    
 }
 
 // MARK: - SliderConfig

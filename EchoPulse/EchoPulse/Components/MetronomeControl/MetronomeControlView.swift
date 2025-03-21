@@ -24,24 +24,42 @@ struct MetronomeControlView: View {
                     iconSize: 45,
                     cornerRadius: 20
                 )
-                
-                HStack {
-                    Text("BPM: \(String(format: "%.f", viewModel.bpmDataSource.value))")
-                        .font(.headline)
-                    
-//                    Stepper(value: $viewModel.bpm, step: 1) {
-//                        
-//                    } onEditingChanged: { editing in
-//                        if !editing {
-//                            viewModel.updateBPM(viewModel.bpm)
-//                        }
-//                    }
-                }
-                .padding()
                      
                 bpmCircleSlider
                 
-                volumeCircleSlider
+                HStack {
+                    CircleStepper(
+                        value: $viewModel.bpmDataSource.value,
+                        type: .decrement,
+                        range: 40...240,
+                        onApply: { newValue in
+                            viewModel.bpmDataSource.applyValue(newValue)
+                        },
+                        onCommit: {
+                            viewModel.bpmDataSource.commitValue()
+                        }
+                    )
+                    
+                    Spacer()
+                    
+                    volumeCircleSlider
+                    
+                    Spacer()
+                    
+                    CircleStepper(
+                        value: $viewModel.bpmDataSource.value,
+                        type: .increment,
+                        range: 40...240,
+                        onApply: { newValue in
+                            viewModel.bpmDataSource.applyValue(newValue)
+                        },
+                        onCommit: {
+                            viewModel.bpmDataSource.commitValue()
+                        }
+                    )
+                }
+                .padding()
+                
             }
             .padding()
             
@@ -69,6 +87,8 @@ extension MetronomeControlView {
             HStack(alignment: .lastTextBaseline) {
                 Text("\(String(format: "%.f", value))")
                     .font(.system(size: 50, weight: .bold, design: .rounded))
+                    .contentTransition(.identity)
+                    .animation(.easeInOut, value: value)
                 
                 Text("BPM")
                     .font(.system(size: 10))

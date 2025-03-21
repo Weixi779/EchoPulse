@@ -27,6 +27,12 @@ struct ColorConfigs {
         .init(hex: "3B4E3F"),
         .init(hex: "553F33")
     ]
+    
+    static let x56C596: Color = .init(hex: "56C596")
+    static let x7BE495: Color = .init(hex: "7BE495")
+    static let xCFF4D2: Color = .init(hex: "CFF4D2")
+    
+    static let freshGreens: [Color] = [x56C596, x7BE495, xCFF4D2]
 }
 
 extension Color {
