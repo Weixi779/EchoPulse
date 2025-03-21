@@ -13,8 +13,6 @@ struct MetronomeControlView: View {
     
     var body: some View {
         ZStack {
-            MetronomeSoundPickerHeader(isShowMenu: $isShowMenu)
-            
             VStack(spacing: 25) {
                 bpmCircleSlider
                 
@@ -60,8 +58,6 @@ struct MetronomeControlView: View {
                 .padding()
             }
             .padding()
-            
-            MetronomeSideMenuView(viewModel: $viewModel, isShowMenu: $isShowMenu)
         }
     }
 }
