@@ -15,20 +15,6 @@
 
 <div align="center">   <img src="https://github.com/user-attachments/assets/f105c8ab-ed36-49a3-b146-11d8d9b9ff14" width="400" />   <img src="https://github.com/user-attachments/assets/5bbe0bfb-b72c-4cf9-adcd-3b3c389cdcee" width="400" /> </div> <div align="center">   <img src="https://github.com/user-attachments/assets/9a7a7507-486a-440f-b048-eb8491a9b810" width="400" />   <img src="https://github.com/user-attachments/assets/7ff380a5-c4f0-446c-a357-b03fd3f3875c" width="400" /> </div>
 
-## 技术实现
-
-- **SwiftUI**: 原生 UI 构建，流畅的交互体验
-- **AVFoundation**: 精确的音频处理与同步控制
-- **WWDC 新 API**: 采用最新框架提升性能与用户体验
-- **自定义组件**: 多个独立开发的可复用 UI 组件
-
-## 使用说明
-
-1. 调整 BPM 值到所需节拍速度
-2. 选择合适的音效并调整音量
-3. 按下播放按钮开始节拍
-4. 支持后台继续工作
-
 ## 未来规划
 
 - 增强与其他音乐创作工具的集成能力
