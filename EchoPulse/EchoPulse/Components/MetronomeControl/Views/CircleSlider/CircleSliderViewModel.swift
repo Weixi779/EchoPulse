@@ -40,7 +40,6 @@ class CircleSliderViewModel {
         self.onDragComplete = onDragComplete
         self.currentAngle = sliderConfig.valueToAngle(initialValue)
         
-        // Prepare haptic feedback
         self.hapticFeedback.prepare()
     }
     
@@ -71,20 +70,16 @@ class CircleSliderViewModel {
         let vector = CGVector(dx: location.x, dy: location.y)
         let angle = calculateAngle(from: vector)
         
-        // Check if in forbidden zone
         if isAngleInForbiddenZone(angle) {
-            return // No response in forbidden zone
+            return
         }
         
         let newValue = sliderConfig.angleToValue(angle)
         
-        // Only update if the value is in range and has actually changed
         if newValue >= sliderConfig.minValue && newValue <= sliderConfig.maxValue {
-            // Check if we've crossed a major tick
             let oldMajorIndex = Int((currentValue - sliderConfig.minValue) / (sliderConfig.valueRange / Double(ticksConfig.majorTickCount)))
             let newMajorIndex = Int((newValue - sliderConfig.minValue) / (sliderConfig.valueRange / Double(ticksConfig.majorTickCount)))
             
-            // Provide haptic feedback when crossing major ticks
             if oldMajorIndex != newMajorIndex {
                 hapticFeedback.impactOccurred()
             }

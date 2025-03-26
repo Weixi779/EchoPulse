@@ -25,7 +25,7 @@ enum CircleSliderStyle {
     var secondaryColor: Color {
         switch self {
         case .blue: return Color.blue.opacity(0.7)
-        case .green: return Color(red: 0.1, green: 0.65, blue: 0.45).opacity(0.8)
+        case .green: return Color(red: 0.1, green: 0.65, blue: 0.45).opacity(0.7)
         case .orange: return Color(red: 0.95, green: 0.5, blue: 0.1).opacity(0.7)
         }
     }
@@ -36,6 +36,10 @@ enum CircleSliderStyle {
             startPoint: .leading,
             endPoint: .trailing
         )
+    }
+    
+    var opacityGradient: Gradient {
+        Gradient(colors: [primaryColor, primaryColor.opacity(0.7)])
     }
     
 }
@@ -123,29 +127,29 @@ struct SliderConfig {
 }
 
 // MARK: - TickMarksConfig
+
+struct TickMarksSize {
+    let length: CGFloat
+    let width: CGFloat
+}
+
 /// Configuration specifically for tick marks
 struct TickMarksConfig {
     let majorTickCount: Int
     let minorTicksPerMajor: Int
-    let majorTickLength: CGFloat
-    let minorTickLength: CGFloat
-    let majorTickWidth: CGFloat
-    let minorTickWidth: CGFloat
+    let majorSize: TickMarksSize
+    let minorSize: TickMarksSize
     
     init(
         majorTickCount: Int = 10,
         minorTicksPerMajor: Int = 9,
-        majorTickLength: CGFloat = 10,
-        minorTickLength: CGFloat = 4,
-        majorTickWidth: CGFloat = 2,
-        minorTickWidth: CGFloat = 1
+        majorSize: TickMarksSize = .init(length: 10, width: 2),
+        minorSize: TickMarksSize = .init(length: 4, width: 1)
     ) {
         self.majorTickCount = majorTickCount
         self.minorTicksPerMajor = minorTicksPerMajor
-        self.majorTickLength = majorTickLength
-        self.minorTickLength = minorTickLength
-        self.majorTickWidth = majorTickWidth
-        self.minorTickWidth = minorTickWidth
+        self.majorSize = majorSize
+        self.minorSize = minorSize
     }
     
     // Calculate value for a major tick based on the slider config
