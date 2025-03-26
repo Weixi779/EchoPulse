@@ -16,17 +16,15 @@ final class MetronomeControlViewModel {
     var sourceTypeDataSource: SourceTypeDataSource = .init()
     
     var isPlaying = false
-    private var metronome: Metronome
+    private var metronome: MetronomeController
     private var cancellable = Set<AnyCancellable>()
 
     init() {
-        self.metronome = Metronome(
+        self.metronome = MetronomeController(
             bpm: _bpmDataSource.value,
             volume: _volumeDataSource.value,
-            sourceType: _sourceTypeDataSource.value
+            soundType: _sourceTypeDataSource.value
         )
-        
-        self.metronome.delegate = self
         
         self.addListeners()
     }
@@ -64,22 +62,6 @@ final class MetronomeControlViewModel {
     func togglePlay() {
         isPlaying.toggle()
         if (isPlaying) {
-            metronome.start()
-        } else {
-            metronome.stop()
-        }
-    }
-}
-
-extension MetronomeControlViewModel: MetronomeDelegate {
-    func audioInterruptionBegan() {
-        isPlaying = false
-        metronome.stop()
-    }
-    
-    func audioInterruptionEnded(shouldResume: Bool) {
-        isPlaying = shouldResume
-        if shouldResume {
             metronome.start()
         } else {
             metronome.stop()

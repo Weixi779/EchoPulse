@@ -36,13 +36,12 @@ final class AudioSessionManager {
         delegates.remove(delegate)
     }
     
-    func setupAudioSession(category: AVAudioSession.Category = .playback, options: AVAudioSession.CategoryOptions = [.mixWithOthers]) throws {
+    func setupAudioSession(category: AVAudioSession.Category = .playback, options: AVAudioSession.CategoryOptions = [.mixWithOthers]) {
         do {
             try AVAudioSession.sharedInstance().setCategory(category, options: options)
             try AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
         } catch {
             logger.error("Error setting up AVAudioSession: \(error.localizedDescription)")
-            throw error
         }
     }
     

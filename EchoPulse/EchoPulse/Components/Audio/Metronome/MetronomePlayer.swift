@@ -15,23 +15,26 @@ final class MetronomePlayer {
     private var timePitch = AVAudioUnitTimePitch()
     private var audioBuffer: AVAudioPCMBuffer
     private var isBufferScheduled = false
-    
+    private var wasPlayingBeforeInterruption = false
+        
     private var logger = Logger(subsystem: "Audio", category: "MetronomePlayer")
+    
+    var isPlaying: Bool { playerNode.isPlaying }
 
     init(buffer: AVAudioPCMBuffer) {
         self.audioBuffer = buffer
-        setupAudioSession()
+        
+        AudioSessionManager.shared.setupAudioSession()
+        
         setupAudioEngine()
-        updateBuffer(buffer: buffer)
+        
+        AudioSessionManager.shared.addDelegate(self)
     }
     
-    private func setupAudioSession() {
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, options: [.mixWithOthers])
-            try AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
-        } catch {
-            logger.error("Error setting up AVAudioSession: \(error.localizedDescription)")
-        }
+    deinit {
+        AudioSessionManager.shared.removeDelegate(self)
+        playerNode.stop()
+        audioEngine.stop()
     }
 
     private func setupAudioEngine() {
@@ -95,9 +98,24 @@ final class MetronomePlayer {
             playerNode.play()
         }
     }
+}
+
+extension MetronomePlayer: AudioSessionInterruptionDelegate {
+    func audioInterruptionBegan() {
+        wasPlayingBeforeInterruption = playerNode.isPlaying
+        if wasPlayingBeforeInterruption {
+            playerNode.pause()
+        }
+    }
     
-    deinit {
-        playerNode.stop()
-        audioEngine.stop()
+    func audioInterruptionEnded(shouldResume: Bool) {
+        if wasPlayingBeforeInterruption && shouldResume {
+            // 可能需要重启引擎
+            if !audioEngine.isRunning {
+                try? audioEngine.start()
+            }
+            
+            play()
+        }
     }
 }

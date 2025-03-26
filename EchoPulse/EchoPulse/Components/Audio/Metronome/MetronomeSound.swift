@@ -13,12 +13,12 @@ final class MetronomeSound {
     private var audioFile: AVAudioFile?
     private var originalBuffer: AVAudioPCMBuffer?
     private var audioBuffer: AVAudioPCMBuffer?
-    private var sourceType: MetronomeSoundType
+    private var soundType: MetronomeSoundType
     
     private let logger: Logger = Logger(subsystem: "Audio", category: "MetronomeSound")
     
-    init(sourceType: MetronomeSoundType) {
-        self.sourceType = sourceType
+    init(soundType: MetronomeSoundType) {
+        self.soundType = soundType
         loadAudioFile()
     }
     
@@ -26,8 +26,8 @@ final class MetronomeSound {
         return audioBuffer
     }
 
-    public func updateSourceType(_ sourceType: MetronomeSoundType, _ targetBPM: Double? = nil) {
-        self.sourceType = sourceType
+    public func updateSoundType(_ soundType: MetronomeSoundType, _ targetBPM: Double? = nil) {
+        self.soundType = soundType
         loadAudioFile()
         
         if let bpm = targetBPM {
@@ -51,7 +51,12 @@ final class MetronomeSound {
         if let source = originalBuffer.floatChannelData, let destination = trimmedBuffer.floatChannelData {
             let channelCount = Int(originalBuffer.format.channelCount)
             for channel in 0..<channelCount {
-                memcpy(destination[channel], source[channel], Int(totalFrames) * MemoryLayout<Float>.size)
+                let framesToCopy = min(Int(totalFrames), Int(originalBuffer.frameLength))
+                memcpy(
+                    destination[channel],
+                    source[channel],
+                    framesToCopy * MemoryLayout<Float>.size
+                )
             }
         }
 
@@ -59,8 +64,9 @@ final class MetronomeSound {
     }
     
     private func loadAudioFile() {
-        let fileName = sourceType.fileName
-        let fileType = sourceType.fileType
+        let fileName = soundType.fileName
+        let fileType = soundType.fileType
+        
         guard let url = Bundle.main.url(forResource: fileName, withExtension: fileType) else {
             logger.error("Error: Audio file \(fileName).\(fileType) not found")
             return
