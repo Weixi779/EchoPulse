@@ -54,7 +54,7 @@ final class Metronome {
         }
     }
     
-    var soundType: MetronomeSourceType {
+    var soundType: MetronomeSoundType {
         didSet {
             if oldValue != soundType {
                 changeSoundType(soundType)
@@ -71,7 +71,7 @@ final class Metronome {
         }
     }
 
-    init(bpm: Double, volume: Double, sourceType: MetronomeSourceType) {
+    init(bpm: Double, volume: Double, sourceType: MetronomeSoundType) {
         self.bpm = bpm
         self.volume = volume
         self.soundType = sourceType
@@ -132,7 +132,7 @@ final class Metronome {
         player.setVolume(volume)
     }
 
-    private func changeSoundType(_ sourceType: MetronomeSourceType) {
+    private func changeSoundType(_ sourceType: MetronomeSoundType) {
         self.sound.updateSourceType(sourceType, self.bpm)
         if let buffer = self.sound.getBuffer() {
             self.player.updateBuffer(buffer: buffer)
@@ -202,7 +202,7 @@ extension Metronome {
     }
     
     @discardableResult
-    func setSoundType(_ value: MetronomeSourceType) -> Self {
+    func setSoundType(_ value: MetronomeSoundType) -> Self {
         self.soundType = value
         return self
     }

@@ -36,5 +36,5 @@ struct UserDefaultsUtils {
 extension UserDefaultsUtils {
     static var bpm: UserDefaultsKey<Double> { .bpm }
     static var volume: UserDefaultsKey<Double> { .volume }
-    static var sourceType: UserDefaultsKey<MetronomeSourceType> { .sourceType }
+    static var sourceType: UserDefaultsKey<MetronomeSoundType> { .sourceType }
 }

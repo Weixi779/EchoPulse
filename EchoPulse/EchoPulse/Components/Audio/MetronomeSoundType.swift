@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum MetronomeSourceType: CaseIterable, Identifiable, Codable {
+enum MetronomeSoundType: CaseIterable, Identifiable, Codable {
     var id: Self { self }
     
     case bassDrum
@@ -60,35 +60,5 @@ enum MetronomeSourceType: CaseIterable, Identifiable, Codable {
     
     var fileType: String {
         return "aif"
-    }
-}
-
-extension MetronomeSourceType: Comparable {
-    public static func < (lhs: MetronomeSourceType, rhs: MetronomeSourceType) -> Bool {
-        guard let lhsIndex = Self.allCases.firstIndex(of: lhs),
-              let rhsIndex = Self.allCases.firstIndex(of: rhs) else {
-            fatalError("所有枚举值都应存在于 allCases 中")
-        }
-        return lhsIndex < rhsIndex
-    }
-}
-
-extension MetronomeSourceType {
-    func compare(to other: MetronomeSourceType) -> Int {
-        if self < other {
-            return -1
-        } else if self > other {
-            return 1
-        } else {
-            return 0
-        }
-    }
-    
-    func indexDifference(to other: MetronomeSourceType) -> Int {
-        guard let selfIndex = Self.allCases.firstIndex(of: self),
-              let otherIndex = Self.allCases.firstIndex(of: other) else {
-            fatalError("所有枚举值都应存在于 allCases 中")
-        }
-        return selfIndex - otherIndex
     }
 }

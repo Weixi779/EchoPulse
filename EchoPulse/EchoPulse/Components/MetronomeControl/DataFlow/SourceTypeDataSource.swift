@@ -11,19 +11,19 @@ import Combine
 
 @Observable
 class SourceTypeDataSource: ValueSource {
-    typealias ValueType = MetronomeSourceType
+    typealias ValueType = MetronomeSoundType
     
-    var value: MetronomeSourceType
+    var value: MetronomeSoundType
     var isChanging: Bool = false
     
-    let valueApplied = PassthroughSubject<MetronomeSourceType, Never>()
-    let valueCommitted = PassthroughSubject<MetronomeSourceType, Never>()
+    let valueApplied = PassthroughSubject<MetronomeSoundType, Never>()
+    let valueCommitted = PassthroughSubject<MetronomeSoundType, Never>()
     
     init() {
         self.value = UserDefaultsUtils.getValue(for: .sourceType)
     }
     
-    func applyValue(_ newValue: MetronomeSourceType) {
+    func applyValue(_ newValue: MetronomeSoundType) {
         value = newValue
         isChanging = true
         valueApplied.send(newValue)

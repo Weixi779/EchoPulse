@@ -13,11 +13,11 @@ final class MetronomeSound {
     private var audioFile: AVAudioFile?
     private var originalBuffer: AVAudioPCMBuffer?
     private var audioBuffer: AVAudioPCMBuffer?
-    private var sourceType: MetronomeSourceType
+    private var sourceType: MetronomeSoundType
     
     private let logger: Logger = Logger(subsystem: "Audio", category: "MetronomeSound")
     
-    init(sourceType: MetronomeSourceType) {
+    init(sourceType: MetronomeSoundType) {
         self.sourceType = sourceType
         loadAudioFile()
     }
@@ -26,7 +26,7 @@ final class MetronomeSound {
         return audioBuffer
     }
 
-    public func updateSourceType(_ sourceType: MetronomeSourceType, _ targetBPM: Double? = nil) {
+    public func updateSourceType(_ sourceType: MetronomeSoundType, _ targetBPM: Double? = nil) {
         self.sourceType = sourceType
         loadAudioFile()
         

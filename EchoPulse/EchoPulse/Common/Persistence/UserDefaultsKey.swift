@@ -27,8 +27,8 @@ enum UserDefaultsKey<T: Codable> {
             return 120.0 as! T
         case .volume where T.self == Double.self:
             return 0.5 as! T
-        case .sourceType where T.self == MetronomeSourceType.self:
-            return MetronomeSourceType.bassDrum as! T
+        case .sourceType where T.self == MetronomeSoundType.self:
+            return MetronomeSoundType.bassDrum as! T
         default:
             fatalError("Invalid default value for key \(self)")
         }

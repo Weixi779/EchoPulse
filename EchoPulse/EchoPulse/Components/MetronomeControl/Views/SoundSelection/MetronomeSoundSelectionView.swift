@@ -14,7 +14,7 @@ struct MetronomeSoundSelectionView: View {
     
     var dataSource: SourceTypeDataSource
     
-    private let sources = MetronomeSourceType.allCases
+    private let sources = MetronomeSoundType.allCases
     
     var body: some View {
         ZStack {
@@ -84,7 +84,7 @@ struct MetronomeSoundSelectionView: View {
         .padding(.bottom, 16)
     }
     
-    private func soundCategorySection(title: String, sources: [MetronomeSourceType]) -> some View {
+    private func soundCategorySection(title: String, sources: [MetronomeSoundType]) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.headline)

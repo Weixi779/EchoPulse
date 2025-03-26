@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MetronomeSoundSelectionCell: View {
-    let source: MetronomeSourceType
+    let source: MetronomeSoundType
     let isSelected: Bool
     let height: CGFloat
     let onSelect: () -> Void
