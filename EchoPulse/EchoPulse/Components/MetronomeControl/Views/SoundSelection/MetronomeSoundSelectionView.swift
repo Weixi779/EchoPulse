@@ -12,7 +12,7 @@ struct MetronomeSoundSelectionView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.schemeStyle) var schemeStyle
     
-    var dataSource: SourceTypeDataSource
+    var dataSource: SoundTypeDataSource
     
     private let sources = MetronomeSoundType.allCases
     

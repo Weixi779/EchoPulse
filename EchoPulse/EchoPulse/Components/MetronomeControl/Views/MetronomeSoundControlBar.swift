@@ -12,7 +12,7 @@ struct MetronomeSoundControlBar: View {
     @Environment(\.schemeStyle) var schemeStyle
     
     @Binding var isPlaying: Bool
-    var sourceDataSource: SourceTypeDataSource
+    var soundDataSource: SoundTypeDataSource
     var onToggle: () -> Void
     private let height: CGFloat
     private let cornerRadius: CGFloat = 20
@@ -20,9 +20,9 @@ struct MetronomeSoundControlBar: View {
     @State private var animationTrigger = false
     @State private var isShowingSoundSelection = false
 
-    init(isPlaying: Binding<Bool>, sourceDataSource: SourceTypeDataSource, onToggle: @escaping () -> Void, height: CGFloat) {
+    init(isPlaying: Binding<Bool>, soundDataSource: SoundTypeDataSource, onToggle: @escaping () -> Void, height: CGFloat) {
         self._isPlaying = isPlaying
-        self.sourceDataSource = sourceDataSource
+        self.soundDataSource = soundDataSource
         self.onToggle = onToggle
         self.height = height
     }
@@ -38,7 +38,7 @@ struct MetronomeSoundControlBar: View {
         .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
         .animation(.easeInOut(duration: 0.3), value: isPlaying)
         .sheet(isPresented: $isShowingSoundSelection) {
-            MetronomeSoundSelectionView(dataSource: sourceDataSource)
+            MetronomeSoundSelectionView(dataSource: soundDataSource)
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
         }
@@ -77,7 +77,7 @@ struct MetronomeSoundControlBar: View {
     private var controlContent: some View {
         HStack(spacing: 16) {
             HStack {
-                Image(systemName: sourceDataSource.value.systemIconName)
+                Image(systemName: soundDataSource.value.systemIconName)
                     .resizable()
                     .scaledToFit()
                     .frame(width: height * 0.4, height: height * 0.4)
@@ -87,7 +87,7 @@ struct MetronomeSoundControlBar: View {
                     .frame(height: height * 0.4)
                     .opacity(0.5)
                 
-                Text(sourceDataSource.value.fileName)
+                Text(soundDataSource.value.fileName)
                     .font(.system(size: 16, weight: .medium, design: .rounded))
                     .lineLimit(1)
                     .opacity(isPlaying ? 0.9 : 0.7)
