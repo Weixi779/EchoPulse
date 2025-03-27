@@ -10,7 +10,7 @@ import Observation
 import Combine
 
 @Observable
-class SourceTypeDataSource: ValueSource {
+class SoundTypeDataSource: ValueSource {
     typealias ValueType = MetronomeSoundType
     
     var value: MetronomeSoundType

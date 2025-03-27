@@ -13,7 +13,7 @@ import Combine
 final class MetronomeControlViewModel {
     var bpmDataSource: BPMDataSource = .init()
     var volumeDataSource: VolumeDataSource = .init()
-    var sourceTypeDataSource: SourceTypeDataSource = .init()
+    var soundTypeDataSource: SoundTypeDataSource = .init()
     
     var isPlaying = false
     private var metronome: MetronomeController
@@ -23,7 +23,7 @@ final class MetronomeControlViewModel {
         self.metronome = MetronomeController(
             bpm: _bpmDataSource.value,
             volume: _volumeDataSource.value,
-            soundType: _sourceTypeDataSource.value
+            soundType: _soundTypeDataSource.value
         )
         
         self.addListeners()
@@ -52,7 +52,7 @@ final class MetronomeControlViewModel {
     }
     
     private func addSourceTypeCommitHooker() {
-        sourceTypeDataSource.valueCommitted
+        soundTypeDataSource.valueCommitted
             .sink { sourceType in
                 self.metronome.setSoundType(sourceType)
             }
